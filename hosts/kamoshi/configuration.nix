@@ -31,6 +31,8 @@
     openssh.authorizedKeys.keyFiles = [ /etc/nixos/ssh/kamov ];
   };
 
+  programs.nix-ld.enable = true;
+
   environment.systemPackages = with pkgs; [
     git
     vim
