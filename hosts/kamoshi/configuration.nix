@@ -27,7 +27,7 @@
   users.users.kamov = {
     isNormalUser = true;
     extraGroups = [ "wheel" ];
-    openssh.authorizedKeys.keyFiles = [ /etc/nixos/ssh/kamov ];
+    openssh.authorizedKeys.keyFiles = [ /root/secrets/ssh/kamov.pub ];
   };
 
   environment.systemPackages = with pkgs; [
@@ -84,7 +84,7 @@
       containers = {
         kotori = {
           image = "kamov/kotori";
-          environmentFiles = [ "/etc/nixos/secrets/kotori.env" ];
+          environmentFiles = [ /root/secrets/kotori.env ];
           autoStart = true;
         };
       };
