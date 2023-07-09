@@ -22,7 +22,6 @@
   };
 
   time.timeZone = "Europe/Warsaw";
-
   i18n.defaultLocale = "en_US.UTF-8";
 
   users.users.kamov = {
@@ -30,8 +29,6 @@
     extraGroups = [ "wheel" ];
     openssh.authorizedKeys.keyFiles = [ /etc/nixos/ssh/kamov ];
   };
-
-  programs.nix-ld.enable = true;
 
   environment.systemPackages = with pkgs; [
     git
@@ -75,6 +72,23 @@
   security.acme = {
     acceptTerms = true;
     defaults.email = "maciej@kamoshi.org";
+  };
+
+  virtualisation = {
+    podman = {
+      enable = true;
+      dockerCompat = true;
+    };
+    oci-containers = {
+      backend = "podman";
+      containers = {
+        kotori = {
+          image = "kamov/kotori";
+          environmentFiles = [ "/etc/nixos/secrets/kotori.env" ];
+          autoStart = true;
+        };
+      };
+    };
   };
 
   # This value determines the NixOS release from which the default
