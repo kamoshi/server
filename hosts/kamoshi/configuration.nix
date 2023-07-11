@@ -29,23 +29,24 @@
         2222  # ssh 
       ];
       allowedUDPPorts = [
-        51820 # wireguard
+        42069 # wireguard
       ];
     };
     wireguard.interfaces = {
       wg0 = {
         ips = [ "10.100.0.1/24" ];
-        listenPort = 51820;
+        listenPort = 42069;
         postSetup = ''
           ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.100.0.0/24 -o eth0 -j MASQUERADE
         '';
         postShutdown = ''
           ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.100.0.0/24 -o eth0 -j MASQUERADE
         '';
+        privateKeyFile = "/root/secrets/wireguard/kamoshi";
 
         peers = [
           {
-            publicKey = "TODO";
+            publicKey = "26lQ3qCZrZ3hAqLIDfQNrmFQSQv983TeyXpJUY59QkI=";
             allowedIPs = [ "10.100.0.2/32" ];
           }
         ];
