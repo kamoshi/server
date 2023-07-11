@@ -15,9 +15,41 @@
 
   networking = {
     hostName = "kamoshi";
+    nat = {
+      enable = true;
+      externalInterface = "eth0";
+      internalInterfaces = [ "wg0" ];
+    };
     firewall = {
       enable = true;
-      allowedTCPPorts = [ 22 80 443 2222 ];
+      allowedTCPPorts = [
+        22    # endlessh 
+        80    # nginx 
+        443   # nginx TLS 
+        2222  # ssh 
+      ];
+      allowedUDPPorts = [
+        51820 # wireguard
+      ];
+    };
+    wireguard.interfaces = {
+      wg0 = {
+        ips = [ "10.100.0.1/24" ];
+        listenPort = 51820;
+        postSetup = ''
+          ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.100.0.0/24 -o eth0 -j MASQUERADE
+        '';
+        postShutdown = ''
+          ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.100.0.0/24 -o eth0 -j MASQUERADE
+        '';
+
+        peers = [
+          {
+            publicKey = "TODO";
+            allowedIPs = [ "10.100.0.2/32" ];
+          }
+        ];
+      };
     };
   };
 
@@ -37,6 +69,7 @@
     neovim
     neofetch
     nushell
+    wireguard-tools
   ];
 
   services = {
