@@ -143,12 +143,9 @@
   };
 
   virtualisation = {
-    podman = {
-      enable = true;
-      dockerCompat = true;
-    };
+    docker.enable = true;
     oci-containers = {
-      backend = "podman";
+      backend = "docker";
       containers = {
         kotori = {
           image = "kamov/kotori";
