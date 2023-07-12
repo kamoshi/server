@@ -23,10 +23,11 @@
     firewall = {
       enable = true;
       allowedTCPPorts = [
-        22    # endlessh 
-        80    # nginx 
-        443   # nginx TLS 
-        2222  # ssh 
+        22           # endlessh 
+        80           # nginx 
+        443          # nginx TLS 
+        2222         # ssh 
+        22070 22067  # syncthing relay
       ];
       allowedUDPPorts = [
         42069 # wireguard
@@ -125,6 +126,14 @@
         user = "admin";
         password = "admin";
       };
+      # public relay options
+      relay = {
+        enable = true;
+        providedBy = "kamoshi.org";
+        statusPort = 22070;
+        port = 22067;
+        globalRateBps = 25000;
+      };      
     };
   };
 
