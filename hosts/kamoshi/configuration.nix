@@ -31,9 +31,19 @@
       allowedUDPPorts = [
         42069 # wireguard
       ];
+      interfaces = {
+        "wg0" = {
+          allowedTCPPorts = [
+            8384 22000    # syncthing
+          ];
+          allowedUDPPorts = [
+            22000 21027   # syncthing
+          ];
+        };
+      };
     };
     wireguard.interfaces = {
-      wg0 = {
+      "wg0" = {
         ips = [ "10.100.0.1/24" ];
         listenPort = 42069;
         postSetup = ''
@@ -98,6 +108,24 @@
           root = "/var/www/kamoshi.org";
           addSSL = true;
           enableACME = true;
+        };
+      };
+    };
+    syncthing = {
+      enable = true;
+      user = "syncthing";
+      dataDir = "/home/syncthing/sync/";
+      configDir = "/home/syncthing/.config/";
+      overrideDevices = true;
+      overrideFolders = true;
+      devices = {
+        "kamov" = { id = (builtins.readFile /root/secrets/syncthing/kamov.id); };
+        "phone" = { id = (builtins.readFile /root/secrets/syncthing/phone.id); };
+      };
+      folders = {
+        "obsidian" = {
+          path = "/home/syncthing/sync/obsidian";
+          devices = [ "kamov" "phone" ];
         };
       };
     };
