@@ -117,20 +117,13 @@
     };
     syncthing = {
       enable = true;
-      user = "syncthing";
-      dataDir = "/home/syncthing/sync/";
-      configDir = "/home/syncthing/.config/";
-      overrideDevices = true;
-      overrideFolders = true;
-      devices = {
-        "kamov" = { id = (builtins.readFile /root/secrets/syncthing/kamov.id); };
-        "phone" = { id = (builtins.readFile /root/secrets/syncthing/phone.id); };
-      };
-      folders = {
-        "obsidian" = {
-          path = "/home/syncthing/sync/obsidian";
-          devices = [ "kamov" "phone" ];
-        };
+      user = "kamov";
+      dataDir = "/home/kamov/sync/";
+      configDir = "/home/kamov/sync/.config/";
+      guiAddress = "0.0.0.0:8384";
+      extraOptions.gui = {
+        user = "admin";
+        password = "admin";
       };
     };
   };
