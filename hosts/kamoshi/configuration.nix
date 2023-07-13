@@ -13,6 +13,22 @@
   # Define on which hard drive you want to install Grub.
   boot.loader.grub.device = "/dev/vda"; # or "nodev" for efi only
 
+  system = {
+    autoUpgrade = {
+      enable = true;
+      allowReboot = true;
+    };
+  };
+
+  nix = {
+    optimise.automatic = true;
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 30d";
+    };
+  };
+
   networking = {
     hostName = "kamoshi";
     nat = {
@@ -119,8 +135,8 @@
     syncthing = {
       enable = true;
       user = "kamov";
-      dataDir = "/home/kamov/sync/";
-      configDir = "/home/kamov/sync/.config/";
+      dataDir = "/home/kamov/sync";
+      configDir = "/home/kamov/sync/.config";
       guiAddress = "0.0.0.0:8384";
       extraOptions.gui = {
         user = "admin";
