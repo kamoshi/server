@@ -5,7 +5,10 @@ in
 {
   services = {
     freshrss = {
-      defaultUser = "kamov";
+      enable = true;
+      defaultUser = "admin";
+      # There's something wrong with this
+      # Workaround: https://github.com/FreshRSS/FreshRSS/issues/1082
       passwordFile = "/root/secrets/freshrss/password";
       baseUrl = "https://${address}";
       virtualHost = address;
@@ -14,7 +17,7 @@ in
     nginx = {
       enable = true;
       virtualHosts."${address}" = {
-        addSSL = true;
+        forceSSL = true;
         enableACME = true;
       };
     };

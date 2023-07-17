@@ -126,9 +126,8 @@
       recommendedProxySettings = true;
       virtualHosts = {
         "kamoshi.org" = {
-          default = true;
           root = "/var/www/kamoshi.org";
-          addSSL = true;
+          forceSSL = true;
           enableACME = true;
         };
       };
