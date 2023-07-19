@@ -3,8 +3,8 @@
   imports =
     [
       /etc/nixos/hardware-configuration.nix
-      ./profiles/freshrss.nix
-      ./profiles/cgit.nix
+      # /profiles/freshrss.nix
+      # ./profiles/cgit.nix
       ./profiles/kotori.nix
     ];
 
