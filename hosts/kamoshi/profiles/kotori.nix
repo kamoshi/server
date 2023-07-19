@@ -1,12 +1,15 @@
 { config, pkgs, ... }:
 {
   virtualisation = {
-    docker.enable = true;
+    podman = {
+      enable = true;
+      dockerCompat = true;
+    };
     oci-containers = {
-      backend = "docker";
+      backend = "podman";
       containers = {
         kotori = {
-          image = "kamov/kotori";
+          image = "kamov/kotori:latest";
           environmentFiles = [ /root/secrets/kotori.env ];
           autoStart = true;
         };
