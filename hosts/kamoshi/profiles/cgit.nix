@@ -8,6 +8,7 @@ in
     isSystemUser = true;
     description = "git user";
     home = home;
+    group = "users";
     shell = "${pkgs.git}/bin/git-shell";
     openssh.authorizedKeys.keyFiles = [
       /root/secrets/ssh/kamov.pub
