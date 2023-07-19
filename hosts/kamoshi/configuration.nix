@@ -4,6 +4,7 @@
     [
       /etc/nixos/hardware-configuration.nix
       ./profiles/freshrss.nix
+      ./profiles/cgit.nix
     ];
 
   # Use the GRUB 2 boot loader.
