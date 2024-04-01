@@ -34,11 +34,11 @@
 
   networking = {
     hostName = "kamoshi";
-    nat = {
-      enable = true;
-      externalInterface = "eth0";
-      internalInterfaces = [ "wg0" ];
-    };
+    # nat = {
+    #   enable = true;
+    #   externalInterface = "eth0";
+    #   internalInterfaces = [ "wg0" ];
+    # };
     firewall = {
       enable = true;
       allowedTCPPorts = [
@@ -46,46 +46,46 @@
         80           # nginx
         443          # nginx TLS
         2222         # ssh
-        22070 22067  # syncthing relay
+        # 22070 22067  # syncthing relay
       ];
-      allowedUDPPorts = [
-        42069 # wireguard
-      ];
-      interfaces = {
-        "wg0" = {
-          allowedTCPPorts = [
-            8384 22000    # syncthing
-          ];
-          allowedUDPPorts = [
-            22000 21027   # syncthing
-          ];
-        };
-      };
+      # allowedUDPPorts = [
+      #   42069 # wireguard
+      # ];
+      # interfaces = {
+      #   "wg0" = {
+      #     allowedTCPPorts = [
+      #       8384 22000    # syncthing
+      #     ];
+      #     allowedUDPPorts = [
+      #       22000 21027   # syncthing
+      #     ];
+      #   };
+      # };
     };
-    wireguard.interfaces = {
-      "wg0" = {
-        ips = [ "10.100.0.1/24" ];
-        listenPort = 42069;
-        postSetup = ''
-          ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.100.0.0/24 -o eth0 -j MASQUERADE
-        '';
-        postShutdown = ''
-          ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.100.0.0/24 -o eth0 -j MASQUERADE
-        '';
-        privateKeyFile = "/root/secrets/wireguard/kamoshi";
-
-        peers = [
-          {
-            publicKey = "26lQ3qCZrZ3hAqLIDfQNrmFQSQv983TeyXpJUY59QkI=";
-            allowedIPs = [ "10.100.0.2/32" ];
-          }
-          {
-            publicKey = "W3HCbtf/m/MUZSTTq/Dr9w0mfHjH5eYfOxWtq+eLFXw=";
-            allowedIPs = [ "10.100.0.3/32" ];
-          }
-        ];
-      };
-    };
+    # wireguard.interfaces = {
+    #   "wg0" = {
+    #     ips = [ "10.100.0.1/24" ];
+    #     listenPort = 42069;
+    #     postSetup = ''
+    #       ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.100.0.0/24 -o eth0 -j MASQUERADE
+    #     '';
+    #     postShutdown = ''
+    #       ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.100.0.0/24 -o eth0 -j MASQUERADE
+    #     '';
+    #     privateKeyFile = "/root/secrets/wireguard/kamoshi";
+    #
+    #     peers = [
+    #       {
+    #         publicKey = "26lQ3qCZrZ3hAqLIDfQNrmFQSQv983TeyXpJUY59QkI=";
+    #         allowedIPs = [ "10.100.0.2/32" ];
+    #       }
+    #       {
+    #         publicKey = "W3HCbtf/m/MUZSTTq/Dr9w0mfHjH5eYfOxWtq+eLFXw=";
+    #         allowedIPs = [ "10.100.0.3/32" ];
+    #       }
+    #     ];
+    #   };
+    # };
   };
 
   time.timeZone = "Europe/Warsaw";
@@ -102,9 +102,9 @@
     vim
     wget
     neovim
-    neofetch
-    nushell
-    wireguard-tools
+    # neofetch
+    # nushell
+    # wireguard-tools
   ];
 
   services = {
@@ -134,25 +134,25 @@
         };
       };
     };
-    syncthing = {
-      enable = true;
-      user = "kamov";
-      dataDir = "/home/kamov/sync";
-      configDir = "/home/kamov/sync/.config";
-      guiAddress = "0.0.0.0:8384";
-      extraOptions.gui = {
-        user = "admin";
-        password = "admin";
-      };
-      # public relay options
-      relay = {
-        enable = true;
-        providedBy = "kamoshi.org";
-        statusPort = 22070;
-        port = 22067;
-        globalRateBps = 25000;
-      };
-    };
+    # syncthing = {
+    #   enable = true;
+    #   user = "kamov";
+    #   dataDir = "/home/kamov/sync";
+    #   configDir = "/home/kamov/sync/.config";
+    #   guiAddress = "0.0.0.0:8384";
+    #   extraOptions.gui = {
+    #     user = "admin";
+    #     password = "admin";
+    #   };
+    #   # public relay options
+    #   relay = {
+    #     enable = true;
+    #     providedBy = "kamoshi.org";
+    #     statusPort = 22070;
+    #     port = 22067;
+    #     globalRateBps = 25000;
+    #   };
+    # };
   };
 
   security.acme = {
