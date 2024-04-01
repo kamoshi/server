@@ -5,7 +5,7 @@
       /etc/nixos/hardware-configuration.nix
       # /profiles/freshrss.nix
       # ./profiles/cgit.nix
-      ./profiles/kotori.nix
+      # ./profiles/kotori.nix
     ];
 
   # Use the GRUB 2 boot loader.
@@ -42,10 +42,10 @@
     firewall = {
       enable = true;
       allowedTCPPorts = [
-        22           # endlessh 
-        80           # nginx 
-        443          # nginx TLS 
-        2222         # ssh 
+        22           # endlessh
+        80           # nginx
+        443          # nginx TLS
+        2222         # ssh
         22070 22067  # syncthing relay
       ];
       allowedUDPPorts = [
@@ -151,7 +151,7 @@
         statusPort = 22070;
         port = 22067;
         globalRateBps = 25000;
-      };      
+      };
     };
   };
 
