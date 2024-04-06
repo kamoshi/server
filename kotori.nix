@@ -10,7 +10,7 @@
       containers = {
         kotori = {
           image = "kamov/kotori:latest";
-          environmentFiles = [ /root/secrets/kotori.env ];
+          environmentFiles = [ /root/.secrets/kotori.env ];
           autoStart = true;
         };
       };
