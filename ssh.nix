@@ -6,6 +6,8 @@
     openssh.authorizedKeys.keyFiles = [ /root/.ssh/kamov.pub ];
   };
 
+  networking.firewall.allowedTCPPorts = [ 22 2222 ];
+
   services = {
     endlessh = {
       enable = true;
