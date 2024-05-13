@@ -23,12 +23,18 @@
       recommendedGzipSettings = true;
       recommendedOptimisation = true;
       recommendedProxySettings = true;
-      virtualHosts = {
-        "kamoshi.org" = {
-          root = "/var/www/kamoshi.org";
-          forceSSL = true;
-          enableACME = true;
-        };
+
+      virtualHosts."kamoshi.org" = {
+        root = "/var/www/kamoshi.org";
+        forceSSL = true;
+        enableACME = true;
+
+        listen = [
+          { addr = "[::]";    port = 80; ssl = false; }
+          { addr = "0.0.0.0"; port = 80; ssl = false; }
+          { addr = "[::]";    port = 443; ssl = true; }
+          { addr = "0.0.0.0"; port = 443; ssl = true; }
+        ];
       };
     };
   };
