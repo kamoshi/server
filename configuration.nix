@@ -14,6 +14,8 @@
       ./profile/kotori.nix
       ./profile/wireguard.nix
       ./profile/syncthing.nix
+      ./profile/backup.nix
+      ./profile/postgres.nix
       ./profile/miniflux.nix
     ];
 

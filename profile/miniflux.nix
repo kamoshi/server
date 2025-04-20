@@ -22,4 +22,8 @@
       proxyPass = "http://10.0.0.1:2137";
     };
   };
+
+  services.postgresqlBackup.databases = [
+    "miniflux"
+  ];
 }
