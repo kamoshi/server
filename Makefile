@@ -1,6 +1,6 @@
 
 send:
-	rsync -avz . kamoshi:/etc/nixos
+	rsync -avz --delete . kamoshi:/etc/nixos
 
 back:
-	rsync -avz kamoshi:/etc/nixos/ .
+	rsync -avz --delete kamoshi:/etc/nixos/ .
