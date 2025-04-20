@@ -14,6 +14,7 @@
       ./profile/kotori.nix
       ./profile/wireguard.nix
       ./profile/syncthing.nix
+      ./profile/miniflux.nix
     ];
 
   # Use the GRUB 2 boot loader.

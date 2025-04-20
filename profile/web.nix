@@ -45,7 +45,7 @@
 
         locations."/" = {
           tryFiles = "$uri $uri/ /index.html";
-	};
+        };
 
         listen = [
           { addr = "[::]";    port = 80; ssl = false; }
