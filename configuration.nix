@@ -12,6 +12,7 @@
       ./profile/ssh.nix
       ./profile/web.nix
       ./profile/kotori.nix
+      ./profile/fail2ban.nix
       ./profile/wireguard.nix
       ./profile/syncthing.nix
       ./profile/backup.nix

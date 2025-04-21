@@ -7,6 +7,8 @@
       BASE_URL = "https://rss.kamoshi.org/";
       RUN_MIGRATIONS = 1;
       CREATE_ADMIN = 0;
+      CLEANUP_ARCHIVE_UNREAD_DAYS = "-1";
+      CLEANUP_ARCHIVE_READ_DAYS = "-1";
     };
   };
 
@@ -26,4 +28,20 @@
   services.postgresqlBackup.databases = [
     "miniflux"
   ];
+
+  services.fail2ban.jails = {
+    miniflux = ''
+      enabled = true
+      filter = miniflux
+      port = http,https
+    '';
+  };
+
+  environment.etc = {
+    "fail2ban/filter.d/miniflux.conf".text = ''
+      [Definition]
+      failregex = ^.*msg="[^"]*(Incorrect|Invalid) username or password[^"]*".*client_ip=<ADDR>
+      journalmatch = _SYSTEMD_UNIT=miniflux.service
+    '';
+  };
 }
