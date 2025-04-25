@@ -9,6 +9,7 @@
       CREATE_ADMIN = 0;
       CLEANUP_ARCHIVE_UNREAD_DAYS = "-1";
       CLEANUP_ARCHIVE_READ_DAYS = "-1";
+      POLLING_FREQUENCY = 480;
     };
   };
 
