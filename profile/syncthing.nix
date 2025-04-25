@@ -34,6 +34,11 @@
           path = "/home/kamov/Sync/Obsidian";
           devices = [ "arch" "xiaomi" ];
         };
+        "Website" = {
+          id = "bwy5c-xydvs";
+          path = "/home/kamov/Sync/Website";
+          devices = [ "arch" "xiaomi" ];
+        };
       };
     };
   };
