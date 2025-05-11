@@ -18,6 +18,7 @@
       ./profile/backup.nix
       ./profile/postgres.nix
       ./profile/miniflux.nix
+      ./profile/vikunja.nix
     ];
 
   # Use the GRUB 2 boot loader.

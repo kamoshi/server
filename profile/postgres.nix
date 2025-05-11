@@ -3,6 +3,10 @@ let
   pathBackup = "/var/backup/postgres";
 in
 {
+  services.postgresql = {
+    enable = true;
+  };
+
   systemd.tmpfiles.rules = [
     "d ${pathBackup} 0700 postgres postgres -"
   ];
