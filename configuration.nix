@@ -19,6 +19,7 @@
       ./profile/postgres.nix
       ./profile/miniflux.nix
       ./profile/vikunja.nix
+      ./profile/kanidm.nix
     ];
 
   # Use the GRUB 2 boot loader.
