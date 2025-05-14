@@ -10,6 +10,17 @@
       CLEANUP_ARCHIVE_UNREAD_DAYS = "-1";
       CLEANUP_ARCHIVE_READ_DAYS = "-1";
       POLLING_FREQUENCY = 480;
+
+      # OIDC
+      OAUTH2_PROVIDER = "oidc";
+      OAUTH2_CLIENT_ID = "miniflux";
+      OAUTH2_CLIENT_SECRET_FILE = "/run/secret/kanidm/miniflux";
+      OAUTH2_REDIRECT_URL = "https://rss.kamoshi.org/oauth2/oidc/callback";
+      OAUTH2_OIDC_DISCOVERY_ENDPOINT = "https://auth.kamoshi.org/oauth2/openid/miniflux";
+
+      # Disable local auth
+      DISABLE_LOCAL_AUTH = "true";
+      OAUTH2_USER_CREATION = "true";
     };
   };
 

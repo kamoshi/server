@@ -3,7 +3,7 @@ let
   certs = config.security.acme.certs."auth.kamoshi.org";
 in {
   services.kanidm = {
-    package = pkgs.kanidm_1_5;
+    package = pkgs.kanidmWithSecretProvisioning_1_5;
 
     enableServer = true;
     serverSettings = {
@@ -15,15 +15,44 @@ in {
       bindaddress = "127.0.0.1:8443";
 
       online_backup = {
-        path = "/var/lib/private/kanidm/backups/";
-        schedule = "0 22 * * *";
-        versions = 7;
+        path = "/var/backup/kanidm/";
+        schedule = "30 23 * * *";
+        versions = 2;
       };
     };
 
     enableClient = true;
     clientSettings = {
       uri = "https://auth.kamoshi.org";
+    };
+
+    provision = {
+      enable = true;
+      autoRemove = true;
+
+      persons = {
+        kamov = {
+          displayName = "kamov";
+          mailAddresses = [ "maciej@kamoshi.org" ];
+          groups = [ "miniflux.users" ];
+        };
+      };
+
+      groups = {
+        "miniflux.users" = {};
+      };
+
+      systems.oauth2 = {
+        miniflux = {
+          displayName = "Miniflux";
+          originUrl = "https://rss.kamoshi.org/oauth2/oidc/callback";
+          originLanding = "https://rss.kamoshi.org/oauth2/oidc/redirect";
+          preferShortUsername = true;
+          scopeMaps = {
+            "miniflux.users" = [ "openid" "profile" "email" ];
+          };
+        };
+      };
     };
   };
 
@@ -39,7 +68,7 @@ in {
   # Backup
   # ----------
   services.restic.backups.daily.paths = [
-    "/var/lib/private/kanidm/backups/"
+    "/var/backup/kanidm/"
   ];
 
   # Network
