@@ -16,7 +16,7 @@ in {
 
       online_backup = {
         path = "/var/backup/kanidm/";
-        schedule = "30 23 * * *";
+        schedule = "0 20 * * *"; # UTC time
         versions = 2;
       };
     };
