@@ -1,5 +1,29 @@
 { config, pkgs, ... }:
 {
+  # System security
+  # ----------
+  users.groups.miniflux = {};
+  users.users.miniflux = {
+    isSystemUser = true;
+    createHome = false;
+    group = "miniflux";
+  };
+
+  systemd.services.miniflux = {
+    serviceConfig = {
+      User  = "miniflux";
+      Group = "miniflux";
+    };
+  };
+
+  sops.secrets."kanidm/miniflux" = {
+    owner = "miniflux";
+    group = "miniflux";
+    mode = "0400";
+  };
+
+  # Miniflux
+  # ----------
   services.miniflux = {
     enable = true;
     config = {
@@ -14,7 +38,7 @@
       # OIDC
       OAUTH2_PROVIDER = "oidc";
       OAUTH2_CLIENT_ID = "miniflux";
-      OAUTH2_CLIENT_SECRET_FILE = "/run/secret/kanidm/miniflux";
+      OAUTH2_CLIENT_SECRET_FILE = config.sops.secrets."kanidm/miniflux".path;
       OAUTH2_REDIRECT_URL = "https://rss.kamoshi.org/oauth2/oidc/callback";
       OAUTH2_OIDC_DISCOVERY_ENDPOINT = "https://auth.kamoshi.org/oauth2/openid/miniflux";
 
@@ -24,6 +48,8 @@
     };
   };
 
+  # Network
+  # ----------
   networking.firewall = {
     enable = true;
     interfaces.wg0.allowedTCPPorts = [ 2137 ];
@@ -36,10 +62,6 @@
       proxyPass = "http://10.0.0.1:2137";
     };
   };
-
-  services.postgresqlBackup.databases = [
-    "miniflux"
-  ];
 
   services.fail2ban.jails = {
     miniflux = ''
@@ -56,4 +78,10 @@
       journalmatch = _SYSTEMD_UNIT=miniflux.service
     '';
   };
+
+  # Database
+  # ----------
+  services.postgresqlBackup.databases = [
+    "miniflux"
+  ];
 }

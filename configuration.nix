@@ -8,6 +8,9 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      # Secrets provisioning
+      "${builtins.fetchTarball "https://github.com/Mic92/sops-nix/archive/e93ee1d900ad264d65e9701a5c6f895683433386.tar.gz"}/modules/sops"
+      # Modules
       ./profile/nix.nix
       ./profile/ssh.nix
       ./profile/web.nix
@@ -21,6 +24,11 @@
       ./profile/vikunja.nix
       ./profile/kanidm.nix
     ];
+
+  sops = {
+    age.keyFile = "/root/.config/sops/age/keys.txt";
+    defaultSopsFile = /var/lib/secrets/kamoshi.yaml;
+  };
 
   # Use the GRUB 2 boot loader.
   boot.loader.grub.enable = true;

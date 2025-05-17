@@ -1,5 +1,13 @@
 { config, pkgs, ... }:
 {
+  # System security
+  # ----------
+  sops.secrets.kotori = {
+    mode = "0400";
+  };
+
+  # Kotori
+  # ----------
   virtualisation = {
     podman = {
       enable = true;
@@ -10,7 +18,8 @@
       containers = {
         kotori = {
           image = "kamov/kotori:latest";
-          environmentFiles = [ /root/.secrets/kotori.env ];
+          serviceName = "podman-kotori";
+          environmentFiles = [ config.sops.secrets.kotori.path ];
           autoStart = true;
         };
       };
