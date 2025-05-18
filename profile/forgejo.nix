@@ -63,6 +63,9 @@ in
           ALLOW_ONLY_EXTERNAL_REGISTRATION = true;
           SHOW_REGISTRATION_BUTTON = false;
           REGISTER_EMAIL_CONFIRM = false;
+          # Disable pasword login
+          ENABLE_BASIC_AUTHENTICATION = false;
+          ENABLE_INTERNAL_SIGNIN = false;
         };
         session.COOKIE_SECURE = true;
         ui.DEFAULT_THEME = "forgejo-auto";
