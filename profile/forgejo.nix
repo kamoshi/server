@@ -79,8 +79,17 @@ in
     nginx.virtualHosts.${domain} = {
       enableACME = true;
       forceSSL = true;
-      locations."/" = {
-        proxyPass = "http://localhost:3200/";
+
+      locations = {
+        "/robots.txt" = {
+          extraConfig = ''
+            return 200 "User-agent: *\nDisallow: /\n";
+            add_header Content-Type text/plain;
+          '';
+        };
+        "/" = {
+          proxyPass = "http://localhost:3200/";
+        };
       };
     };
   };
