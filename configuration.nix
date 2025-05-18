@@ -23,6 +23,7 @@
       ./profile/miniflux.nix
       ./profile/vikunja.nix
       ./profile/kanidm.nix
+      ./profile/forgejo.nix
     ];
 
   sops = {

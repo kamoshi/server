@@ -34,12 +34,20 @@ in {
         kamov = {
           displayName = "kamov";
           mailAddresses = [ "maciej@kamoshi.org" ];
-          groups = [ "miniflux.users" ];
+          groups = [
+            "miniflux.access"
+            "forgejo.access"
+            "forgejo.admins"
+          ];
         };
       };
 
       groups = {
-        "miniflux.users" = {};
+        # Miniflux
+        "miniflux.access" = {};
+        # Forgejo
+        "forgejo.access" = {};
+        "forgejo.admins" = {};
       };
 
       systems.oauth2 = {
@@ -47,9 +55,24 @@ in {
           displayName = "Miniflux";
           originUrl = "https://rss.kamoshi.org/oauth2/oidc/callback";
           originLanding = "https://rss.kamoshi.org/oauth2/oidc/redirect";
+          basicSecretFile = config.sops.secrets."kanidm/miniflux".path;
           preferShortUsername = true;
           scopeMaps = {
-            "miniflux.users" = [ "openid" "profile" "email" ];
+            "miniflux.access" = [ "openid" "profile" "email" ];
+          };
+        };
+        forgejo = {
+          displayName = "Forgejo";
+          originUrl = "https://git.kamoshi.org/user/oauth2/kanidm/callback";
+          originLanding = "https://git.kamoshi.org/user/oauth2/kanidm";
+          basicSecretFile = config.sops.secrets."kanidm/forgejo".path;
+          preferShortUsername = true;
+          scopeMaps = {
+            "forgejo.access" = [ "openid" "profile" "email" ];
+          };
+          claimMaps.groups = {
+            joinType = "array";
+            valuesByGroup."forgejo.admins" = [ "admin" ];
           };
         };
       };

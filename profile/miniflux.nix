@@ -18,8 +18,8 @@
 
   sops.secrets."kanidm/miniflux" = {
     owner = "miniflux";
-    group = "miniflux";
-    mode = "0400";
+    group = "kanidm";
+    mode = "0440";
   };
 
   # Miniflux
