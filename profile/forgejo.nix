@@ -128,6 +128,10 @@ in
               "profile"
             ]
             [
+              "--icon-url"
+              "https://kamoshi.org/static/svg/arstotzka.svg"
+            ]
+            [
               "--group-claim-name"
               "groups"
             ]
