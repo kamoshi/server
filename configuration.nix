@@ -24,6 +24,7 @@
       ./profile/vikunja.nix
       ./profile/kanidm.nix
       ./profile/forgejo.nix
+      ./profile/gatus.nix
     ];
 
   sops = {
