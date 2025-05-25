@@ -5,7 +5,18 @@
     enable = true;
 
     settings = {
-      web.port = 3456;
+      web = {
+        port = 3456;
+        address = "127.0.0.1";
+      };
+
+      ui = {
+        title = "Healthcheck";
+        header = "Services Health";
+        logo = "https://kamoshi.org/static/svg/aya.svg";
+        link = "https://kamoshi.org";
+        custom-css = "#social { display: none; }";
+      };
 
       endpoints = [
         {
