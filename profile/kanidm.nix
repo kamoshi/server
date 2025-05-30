@@ -3,7 +3,7 @@ let
   certs = config.security.acme.certs."auth.kamoshi.org";
 in {
   services.kanidm = {
-    package = pkgs.kanidmWithSecretProvisioning_1_5;
+    package = pkgs.kanidmWithSecretProvisioning;
 
     enableServer = true;
     serverSettings = {

@@ -17,14 +17,15 @@
       ./profile/kotori.nix
       ./profile/fail2ban.nix
       ./profile/wireguard.nix
-      ./profile/syncthing.nix
       ./profile/backup.nix
       ./profile/postgres.nix
       ./profile/miniflux.nix
-      ./profile/vikunja.nix
       ./profile/kanidm.nix
       ./profile/forgejo.nix
       ./profile/gatus.nix
+      # Host's services definition
+      ./modules
+      ./hosts/kamoshi.nix
     ];
 
   sops = {
