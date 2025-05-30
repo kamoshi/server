@@ -6,30 +6,17 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      # Secrets provisioning
-      "${builtins.fetchTarball "https://github.com/Mic92/sops-nix/archive/e93ee1d900ad264d65e9701a5c6f895683433386.tar.gz"}/modules/sops"
+    [
       # Modules
-      ./profile/nix.nix
-      ./profile/ssh.nix
       ./profile/web.nix
       ./profile/fail2ban.nix
       ./profile/wireguard.nix
       ./profile/backup.nix
       ./profile/postgres.nix
-      ./profile/kanidm.nix
-      ./profile/forgejo.nix
-      ./profile/gatus.nix
       # Host's services definition
       ./modules
-      ./hosts/kamoshi.nix
+      ./hosts/kamoshi
     ];
-
-  sops = {
-    age.keyFile = "/root/.config/sops/age/keys.txt";
-    defaultSopsFile = /var/lib/secrets/kamoshi.yaml;
-  };
 
   # Use the GRUB 2 boot loader.
   boot.loader.grub.enable = true;
@@ -82,24 +69,6 @@
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.libinput.enable = true;
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  # users.users.alice = {
-  #   isNormalUser = true;
-  #   extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-  #   packages = with pkgs; [
-  #     tree
-  #   ];
-  # };
-
-  # programs.firefox.enable = true;
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    nano
-    fish
-  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
