@@ -14,12 +14,10 @@
       ./profile/nix.nix
       ./profile/ssh.nix
       ./profile/web.nix
-      ./profile/kotori.nix
       ./profile/fail2ban.nix
       ./profile/wireguard.nix
       ./profile/backup.nix
       ./profile/postgres.nix
-      ./profile/miniflux.nix
       ./profile/kanidm.nix
       ./profile/forgejo.nix
       ./profile/gatus.nix
