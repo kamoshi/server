@@ -31,6 +31,27 @@
     bind = "127.0.0.1";
   };
 
+  # Grafana
+  # =======
+  sops.secrets."grafana/secret_key" = {
+    owner = "grafana";
+    group = "grafana";
+    mode = "0400";
+  };
+
+  sops.secrets."grafana/client_secret" = {
+    owner = "grafana";
+    group = "kanidm";
+    mode = "0440";
+  };
+
+  kamov.grafana = {
+    enable = true;
+    domain = "data.kamoshi.org";
+    port = 2139;
+    bind = "127.0.0.1";
+  };
+
   # Kanidm
   # ======
   kamov.kanidm = {
@@ -63,7 +84,7 @@
     enable = true;
     domain = "rss.kamoshi.org";
     port = 2137;
-    bind = "10.0.0.1";
+    bind = "127.0.0.1";
     oauthSecretPath = config.sops.secrets."kanidm/miniflux".path;
   };
 

@@ -62,9 +62,12 @@ in {
             mailAddresses = [ "maciej@kamoshi.org" ];
             groups = [
               "miniflux.access"
+
               "forgejo.access"
               "forgejo.admins"
-              # "vikunja.access"
+
+              "grafana.access"
+              "grafana.admins"
             ];
           };
         };
@@ -113,6 +116,28 @@ in {
           #     "miniflux.access" = [ "openid" "profile" "email" ];
           #   };
           # };
+        };
+
+        # Grafana
+        groups."grafana.access" = { };
+        groups."grafana.editors" = { };
+        groups."grafana.admins" = { };
+        groups."grafana.server-admins" = { };
+        systems.oauth2.grafana = {
+          displayName = "Grafana";
+          originUrl = "https://data.kamoshi.org/login/generic_oauth";
+          originLanding = "https://data.kamoshi.org/login/generic_oauth";
+          basicSecretFile = config.sops.secrets."grafana/client_secret".path;
+          preferShortUsername = true;
+          scopeMaps."grafana.access" = [ "openid" "email" "profile" ];
+          claimMaps.groups = {
+            joinType = "array";
+            valuesByGroup = {
+              "grafana.editors" = [ "editor" ];
+              "grafana.admins" = [ "admin" ];
+              "grafana.server-admins" = [ "server_admin" ];
+            };
+          };
         };
       };
     };
