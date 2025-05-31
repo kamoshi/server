@@ -11,7 +11,7 @@ in {
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     # Sops-nix - secret provisioning
-    "${builtins.fetchTarball "https://github.com/Mic92/sops-nix/archive/e93ee1d900ad264d65e9701a5c6f895683433386.tar.gz"}/modules/sops"
+    "${builtins.fetchTarball "https://github.com/Mic92/sops-nix/archive/8d215e1c981be3aa37e47aeabd4e61bb069548fd.tar.gz"}/modules/sops"
     # Custom module definitions
     ../../modules
     # Host service settings
@@ -106,7 +106,7 @@ in {
     };
   };
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
+  # Define a user account. Don't forget to set a password with `passwd`.
   users.users.kamov = {
     isNormalUser = true;
     extraGroups = [ "wheel" "www" ];
