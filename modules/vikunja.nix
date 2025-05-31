@@ -25,7 +25,7 @@ in {
     # System
     # ------
     users = {
-      groups.vikunja = { };
+      groups.vikunja = {};
 
       users."vikunja" = {
         group = "vikunja";
@@ -39,7 +39,7 @@ in {
     services.vikunja = {
       enable = true;
       port = cfg.enable;
-      frontendScheme = "http";
+      frontendScheme = "https";
       frontendHostname = cfg.bind;
 
       database = {
@@ -51,6 +51,21 @@ in {
 
       settings = {
         service.enableregistration = false;
+
+        openid = {
+          enabled = true;
+          redirecturl = "https://${cfg.domain}/auth/openid/";
+          providers = let
+            sso = config.services.kanidm.domain;
+          in [
+            {
+              name = "Arstotzka";
+              authurl = "https://${sso}/oauth2/openid/vikunja/";
+              logouturl = "https://${sso}/logout";
+              clientid = "vikunja";
+            }
+          ];
+        };
       };
     };
 

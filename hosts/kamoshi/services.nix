@@ -81,7 +81,7 @@
   # =======
   kamov.vikunja = {
     enable = false;
-    domain = "todo.kamoshi.org";
+    domain = "kanban.kamoshi.org";
     port = 6969;
     bind = "127.0.0.1";
   };

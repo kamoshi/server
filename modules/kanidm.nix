@@ -64,6 +64,7 @@ in {
               "miniflux.access"
               "forgejo.access"
               "forgejo.admins"
+              # "vikunja.access"
             ];
           };
         };
@@ -74,6 +75,8 @@ in {
           # Forgejo
           "forgejo.access" = {};
           "forgejo.admins" = {};
+          # Vikunja
+          # "vikunja.access" = {};
         };
 
         systems.oauth2 = {
@@ -101,6 +104,15 @@ in {
               valuesByGroup."forgejo.admins" = [ "admin" ];
             };
           };
+          # vikunja = {
+          #   displayName = "Vikunja";
+          #   originUrl = "https://kanban.kamoshi.org/auth/openid/";
+          #   originLanding = "https://kanban.kamoshi.org";
+          #   preferShortUsername = true;
+          #   scopeMaps = {
+          #     "miniflux.access" = [ "openid" "profile" "email" ];
+          #   };
+          # };
         };
       };
     };
