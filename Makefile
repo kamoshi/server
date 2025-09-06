@@ -10,10 +10,10 @@ megumu:
 	sudo nixos-rebuild switch --flake .#megumu
 
 megumu-up:
-	rsync -avz --delete --progress . megumu:~/nix-config
+	rsync -avz --delete --info=progress2 . megumu:~/nix-config
 
 megumu-down:
-	rsync -avz --delete --progress megumu:~/nix-config/ .
+	rsync -avz --delete --info=progress2 megumu:~/nix-config/ .
 
 update:
 	nix flake update
