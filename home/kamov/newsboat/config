@@ -1,0 +1,2 @@
+datetime-format "%Y-%m-%d"
+browser "firefox-developer-edition --new-tab %u"

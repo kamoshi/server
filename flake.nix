@@ -28,7 +28,7 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.kamov = import ./home/kamov.nix;
+          home-manager.users.kamov = import ./home/kamov;
         }
       ];
       specialArgs = {
@@ -47,7 +47,7 @@
 
           # Specify your home configuration modules here, for example,
           # the path to your home.nix.
-          modules = [ ./home/kamov.nix ];
+          modules = [ ./home/kamov ];
 
           # Optionally use extraSpecialArgs
           # to pass through arguments to home.nix
