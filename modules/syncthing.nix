@@ -46,28 +46,36 @@ in {
           password = "kamov";
         };
         devices = {
-          "arch" = {
+          "aya" = {
+            id = "K53ML2R-XXPRH3Z-SB7RKVP-UZCWTDA-636J5O4-442XL3U-O7ZA7Y4-K4THEQY";
+          };
+          "momiji" = {
             id = "Q3QI722-QQL5J5Y-7MZJM54-BF2ZVYD-ZF25RJW-MH7OIJK-6QRCKBZ-KT6V4QF";
           };
-          "xiaomi" = {
-            id = "C5MES7V-2QNWNA2-AYGIW2L-CBXJ7QX-D2UPQP2-SM6EDAW-ZWMHDOV-MVTSUQN";
+          "hatate" = {
+            id = "IF63A73-XV6LEZS-UZH7DEU-CPOJVEN-OQ3CEWZ-KHVNC5U-KNFCLLD-S7MOXAW";
           };
         };
         folders = {
           "Photos" = {
             id = "y963t-gpuhn";
-            path = "/home/kamov/Sync/Photos";
-            devices = [ "arch" "xiaomi" ];
+            path = "/data/sync/photos";
+            devices = [ "momiji" ];
           };
           "Obsidian" = {
             id = "g2lzf-m5eu9";
-            path = "/home/kamov/Sync/Obsidian";
-            devices = [ "arch" "xiaomi" ];
+            path = "/data/sync/obsidian";
+            devices = [ "aya" "momiji" "hatate" ];
           };
           "Website" = {
             id = "bwy5c-xydvs";
-            path = "/home/kamov/Sync/Website";
-            devices = [ "arch" "xiaomi" ];
+            path = "/data/sync/website";
+            devices = [ "aya" "momiji" ];
+          };
+          "Workspace" = {
+            id = "workspace";
+            path = "/data/sync/workspace";
+            devices = [ "aya" "momiji" ];
           };
         };
       };

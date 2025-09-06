@@ -1,9 +1,9 @@
-{ config, ... }:
+{ config, lib, ... }:
 {
   # Load secrets
   sops = {
     age.keyFile = "/root/.config/sops/age/keys.txt";
-    defaultSopsFile = /var/lib/secrets/kamoshi.yaml;
+    defaultSopsFile = ./sops.yaml;
   };
 
   # Forgejo
@@ -33,20 +33,20 @@
 
   # Grafana
   # =======
-  sops.secrets."grafana/secret_key" = {
+  sops.secrets."grafana/secret_key" = lib.mkIf config.kamov.grafana.enable {
     owner = "grafana";
     group = "grafana";
     mode = "0400";
   };
 
-  sops.secrets."grafana/client_secret" = {
+  sops.secrets."grafana/client_secret" = lib.mkIf config.kamov.grafana.enable {
     owner = "grafana";
     group = "kanidm";
     mode = "0440";
   };
 
   kamov.grafana = {
-    enable = true;
+    enable = false;
     domain = "data.kamoshi.org";
     port = 2139;
     bind = "127.0.0.1";
@@ -74,14 +74,14 @@
 
   # Miniflux
   # ========
-  sops.secrets."kanidm/miniflux" = {
+  sops.secrets."kanidm/miniflux" = lib.mkIf config.kamov.miniflux.enable {
     owner = "miniflux";
     group = "kanidm";
     mode = "0440";
   };
 
   kamov.miniflux = {
-    enable = true;
+    enable = false;
     domain = "rss.kamoshi.org";
     port = 2137;
     bind = "127.0.0.1";

@@ -10,8 +10,6 @@ in {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    # Sops-nix - secret provisioning
-    "${builtins.fetchTarball "https://github.com/Mic92/sops-nix/archive/8d215e1c981be3aa37e47aeabd4e61bb069548fd.tar.gz"}/modules/sops"
     # Custom module definitions
     ../../modules
     # Host service settings
@@ -28,7 +26,7 @@ in {
   # Define on which hard drive you want to install Grub.
   boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
 
-  networking.hostName = "kamoshi"; # Define your hostname.
+  networking.hostName = "megumu"; # Define your hostname.
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   # networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
@@ -46,7 +44,7 @@ in {
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
   # accidentally delete configuration.nix.
-  system.copySystemConfiguration = true;
+  # system.copySystemConfiguration = true;
 
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
@@ -80,6 +78,8 @@ in {
     };
   };
 
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   nix = {
     optimise.automatic = true;
     gc = {
@@ -97,6 +97,8 @@ in {
     vim
     wget
     fish
+    sshfs
+    ncdu
   ];
 
   networking = {
@@ -106,12 +108,36 @@ in {
     };
   };
 
+  # fileSystems."/data" = {
+  #   device = "/tmp";
+  #   fsType = "tmpfs";
+  # };
+
+  fileSystems."/data" = {
+    device = "u489674@u489674.your-storagebox.de:/megumu";
+    neededForBoot = false;
+    fsType = "fuse.sshfs";
+    options = [
+      "_netdev"
+      "nodev"
+      "noatime"
+      "allow_other"
+      "reconnect"
+      "cache=yes"
+      "cache_timeout=300"
+      "IdentityFile=/root/.ssh/root@megumu"
+      "ServerAliveInterval=15"
+      "ServerAliveCountMax=3"
+    ];
+  };
+
   # Define a user account. Don't forget to set a password with `passwd`.
   users.users.kamov = {
     isNormalUser = true;
     extraGroups = [ "wheel" "www" ];
     openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEelrqEvoCTbgjdN5W6SnIMZ3HrsbfOg3PE2van+XlR4 maciej@kamoshi.org"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIPeYt5Es7OB2z5EKC48XW/ziq2f8RtDhdODfSYISGJu kamov@aya"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEelrqEvoCTbgjdN5W6SnIMZ3HrsbfOg3PE2van+XlR4 kamov@momiji"
     ];
   };
 
@@ -168,6 +194,10 @@ in {
         { # Xiaomi
           publicKey = "THSJl4nUJCU3cUX1egy9XojocTocLXG4+UoNEuYztXw=";
           allowedIPs = [ "10.0.0.3/32" ];
+        }
+        { # aya
+          publicKey = "sJ5ri5XPMgsMsHTZVR9mzo02JRubA13Zoh6lKNMTqEE=";
+          allowedIPs = [ "10.0.0.4/32" ];
         }
       ];
     };

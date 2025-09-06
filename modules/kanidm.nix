@@ -83,7 +83,7 @@ in {
         };
 
         systems.oauth2 = {
-          miniflux = {
+          miniflux = lib.mkIf config.kamov.miniflux.enable {
             displayName = "Miniflux";
             originUrl = "https://rss.kamoshi.org/oauth2/oidc/callback";
             originLanding = "https://rss.kamoshi.org/oauth2/oidc/redirect";
@@ -93,7 +93,7 @@ in {
               "miniflux.access" = [ "openid" "profile" "email" ];
             };
           };
-          forgejo = {
+          forgejo = lib.mkIf config.kamov.forgejo.enable {
             displayName = "Forgejo";
             originUrl = "https://git.kamoshi.org/user/oauth2/kanidm/callback";
             originLanding = "https://git.kamoshi.org/user/oauth2/kanidm";
@@ -107,7 +107,7 @@ in {
               valuesByGroup."forgejo.admins" = [ "admin" ];
             };
           };
-          # vikunja = {
+          # vikunja = lib.mkIf config.kamov.vikunja.enable {
           #   displayName = "Vikunja";
           #   originUrl = "https://kanban.kamoshi.org/auth/openid/";
           #   originLanding = "https://kanban.kamoshi.org";
@@ -123,7 +123,7 @@ in {
         groups."grafana.editors" = { };
         groups."grafana.admins" = { };
         groups."grafana.server-admins" = { };
-        systems.oauth2.grafana = {
+        systems.oauth2.grafana = lib.mkIf config.kamov.grafana.enable {
           displayName = "Grafana";
           originUrl = "https://data.kamoshi.org/login/generic_oauth";
           originLanding = "https://data.kamoshi.org/login/generic_oauth";
