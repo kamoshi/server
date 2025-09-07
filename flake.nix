@@ -23,12 +23,12 @@
     # $ darwin-rebuild build --flake .#aya
     darwinConfigurations."aya" = nix-darwin.lib.darwinSystem {
       modules = [
-        home-manager.darwinModules.home-manager
         ./hosts/aya
+        home-manager.darwinModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.kamov = import ./home/kamov;
+          home-manager.users.kamov = ./home/kamov;
         }
       ];
       specialArgs = {

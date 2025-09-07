@@ -1,7 +1,7 @@
 .PHONY: aya momiji megumu megumu-up megumu-down update check
 
 aya:
-	darwin-rebuild build --flake .#aya
+	sudo darwin-rebuild switch --flake .#aya
 
 momiji:
 	home-manager switch --flake .#momiji

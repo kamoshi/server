@@ -24,8 +24,10 @@
 
     taps = [];
     brews = [
+      "gpg"
       "ncdu"
       "dosbox-x"
+      "pinentry-mac"
     ];
     casks = [
       "vlc"

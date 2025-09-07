@@ -1,9 +1,1 @@
-# This is host specific, import host settings like
-#
-# { ... }:
-# {
-#   imports = [
-#     ./hosts/kamoshi
-#   ];
-# }
-configuration.nix
+result/
