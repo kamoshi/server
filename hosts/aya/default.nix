@@ -28,6 +28,7 @@
       "ncdu"
       "dosbox-x"
       "pinentry-mac"
+      "mupdf-tools"
     ];
     casks = [
       "vlc"

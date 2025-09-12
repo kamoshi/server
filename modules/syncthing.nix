@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, mesh, ... }:
 let
   cfg = config.kamov.syncthing;
 in {
@@ -45,39 +45,49 @@ in {
           user = "kamov";
           password = "kamov";
         };
-        devices = {
-          "aya" = {
-            id = "K53ML2R-XXPRH3Z-SB7RKVP-UZCWTDA-636J5O4-442XL3U-O7ZA7Y4-K4THEQY";
-          };
-          "momiji" = {
-            id = "Q3QI722-QQL5J5Y-7MZJM54-BF2ZVYD-ZF25RJW-MH7OIJK-6QRCKBZ-KT6V4QF";
-          };
-          "hatate" = {
-            id = "IF63A73-XV6LEZS-UZH7DEU-CPOJVEN-OQ3CEWZ-KHVNC5U-KNFCLLD-S7MOXAW";
-          };
-        };
-        folders = {
-          "Photos" = {
-            id = "y963t-gpuhn";
-            path = "/data/sync/photos";
-            devices = [ "momiji" ];
-          };
-          "Obsidian" = {
-            id = "g2lzf-m5eu9";
-            path = "/data/sync/obsidian";
-            devices = [ "aya" "momiji" "hatate" ];
-          };
-          "Website" = {
-            id = "bwy5c-xydvs";
-            path = "/data/sync/website";
-            devices = [ "aya" "momiji" ];
-          };
-          "Workspace" = {
-            id = "workspace";
-            path = "/data/sync/workspace";
-            devices = [ "aya" "momiji" ];
-          };
-        };
+
+        inherit (mesh) devices folders;
+        # devices = {
+        #   "aya" = {
+        #     id = "K53ML2R-XXPRH3Z-SB7RKVP-UZCWTDA-636J5O4-442XL3U-O7ZA7Y4-K4THEQY";
+        #   };
+        #   "momiji" = {
+        #     id = "Q3QI722-QQL5J5Y-7MZJM54-BF2ZVYD-ZF25RJW-MH7OIJK-6QRCKBZ-KT6V4QF";
+        #   };
+        #   "hatate" = {
+        #     id = "IF63A73-XV6LEZS-UZH7DEU-CPOJVEN-OQ3CEWZ-KHVNC5U-KNFCLLD-S7MOXAW";
+        #   };
+        #   "nitori" = {
+        #     id = "4SIJHMJ-6RR5KGV-E53GPIR-MJOZ3PO-4KSKIXP-T7DYO3J-2AP2TGI-GD524A6";
+        #   };
+        # };
+        # folders = {
+        #   "Nix" = {
+        #     id = "nix";
+        #     path = "~/nix";
+        #     devices = [ "aya" "momiji" "nitori" ];
+        #   };
+        #   "Photos" = {
+        #     id = "y963t-gpuhn";
+        #     path = "/data/sync/photos";
+        #     devices = [ "momiji" ];
+        #   };
+        #   "Obsidian" = {
+        #     id = "g2lzf-m5eu9";
+        #     path = "/data/sync/obsidian";
+        #     devices = [ "aya" "momiji" "hatate" ];
+        #   };
+        #   "Website" = {
+        #     id = "bwy5c-xydvs";
+        #     path = "/data/sync/website";
+        #     devices = [ "aya" "momiji" ];
+        #   };
+        #   "Workspace" = {
+        #     id = "workspace";
+        #     path = "/data/sync/workspace";
+        #     devices = [ "aya" "momiji" ];
+        #   };
+        # };
       };
     };
 

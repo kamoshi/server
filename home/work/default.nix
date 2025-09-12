@@ -1,15 +1,33 @@
-{ config, pkgs, mesh, ... }:
+{ config, pkgs, ... }:
 let
+  device = "nitori";
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
+  mesh = import ../../mesh.nix { inherit device; inherit (pkgs) lib; };
 in
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home.username = "kamov";
+  home.username = "maciej";
   home.homeDirectory =
     if isDarwin
       then "/Users/${config.home.username}"
       else "/home/${config.home.username}";
+
+  programs.fish = {
+    enable = true;
+  };
+
+  home.shell.enableFishIntegration = true;
+
+  programs.neovim = {
+    enable = true;
+    viAlias = true;
+    vimAlias = true;
+  };
+
+  programs.direnv = {
+    enable = true;
+  };
 
   services.syncthing = {
     enable = true;
@@ -22,27 +40,6 @@ in
 
       inherit (mesh) devices folders;
     };
-  };
-
-  programs.git = {
-    enable = true;
-    userName  = "Maciej Jur";
-    userEmail = "maciej@kamoshi.org";
-
-    signing = {
-      key = "191CBFF5F72ECAFD";
-      signByDefault = true;
-    };
-
-    extraConfig = {
-      init.defaultBranch = "main";
-    };
-  };
-
-  programs.neovim = {
-    enable = true;
-    viAlias = true;
-    vimAlias = true;
   };
 
   # The home.packages option allows you to install Nix packages into your
@@ -66,10 +63,6 @@ in
     #   echo "Hello, ${config.home.username}!"
     # '')
   ];
-
-  xdg.configFile."zed/settings.json".source = ./zed/settings.json;
-  xdg.configFile."newsboat/config".source = ./newsboat/config;
-  xdg.configFile."newsboat/urls".source = ./newsboat/urls;
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.

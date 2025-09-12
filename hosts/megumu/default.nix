@@ -99,6 +99,7 @@ in {
     fish
     sshfs
     ncdu
+    gnumake
   ];
 
   networking = {

@@ -21,24 +21,34 @@
     # aya
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#aya
-    darwinConfigurations."aya" = nix-darwin.lib.darwinSystem {
-      modules = [
-        ./hosts/aya
-        home-manager.darwinModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users.kamov = ./home/kamov;
-        }
-      ];
-      specialArgs = {
-        inherit self;
-      };
-    };
+    darwinConfigurations."aya" =
+      let
+        device = "aya";
+        mesh = import ./mesh.nix { inherit device; inherit (nixpkgs) lib; };
+      in
+        nix-darwin.lib.darwinSystem {
+          modules = [
+            ./hosts/aya
+            home-manager.darwinModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.kamov = ./home/kamov;
+              home-manager.extraSpecialArgs = {
+                inherit mesh;
+              };
+            }
+          ];
+          specialArgs = {
+            inherit self mesh;
+          };
+        };
 
     # momiji
     homeConfigurations."momiji" =
       let
+        device = "momiji";
+        mesh = import ./mesh.nix { inherit device; inherit (nixpkgs) lib; };
         system = "x86_64-linux";
         pkgs = nixpkgs.legacyPackages.${system};
       in
@@ -51,17 +61,48 @@
 
           # Optionally use extraSpecialArgs
           # to pass through arguments to home.nix
+          extraSpecialArgs = {
+            inherit mesh;
+          };
         };
 
     # megumu
-    nixosConfigurations = {
-      megumu = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.megumu =
+      let
+        device = "megumu";
+        mesh = import ./mesh.nix { inherit device; inherit (nixpkgs) lib; };
+      in
+        nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            sops-nix.nixosModules.sops
+            ./hosts/megumu
+          ];
+          specialArgs = {
+            inherit mesh;
+          };
+        };
+
+    # nitori
+    homeConfigurations."nitori" =
+      let
+        device = "nitori";
+        mesh = import ./mesh.nix { inherit device; inherit (nixpkgs) lib; };
         system = "x86_64-linux";
-        modules = [
-          sops-nix.nixosModules.sops
-          ./hosts/megumu
-        ];
-      };
-    };
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+        home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+
+          # Specify your home configuration modules here, for example,
+          # the path to your home.nix.
+          modules = [ ./home/work ];
+
+          # Optionally use extraSpecialArgs
+          # to pass through arguments to home.nix
+          extraSpecialArgs = {
+            inherit mesh;
+          };
+        };
   };
 }
