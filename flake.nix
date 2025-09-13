@@ -125,6 +125,15 @@
           megumu = "/data/sync/calibre";
         };
       };
+      photos = {
+        id = "photos";
+        label = "Photos";
+        path = {
+          aya = "~/Desktop/Photos";
+          hatate = "~/DCIM";
+          momiji = "~/Desktop/Photos";
+        };
+      };
     };
 
     meshFor = shared.meshFor devices folders;
