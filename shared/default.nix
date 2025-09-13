@@ -5,15 +5,30 @@
 let
   lib = nixpkgs.lib;
 
+  maybeAttachHome = type: mesh: system:
+    if system ? "home"
+      then [
+        home-manager."${type}Modules".home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users = system.home;
+          home-manager.extraSpecialArgs = {
+            inherit mesh;
+          };
+        }
+      ]
+      else [];
+
   mkNixOS = meshFor: name: system:
     let
       mesh = meshFor name;
     in
       lib.nixosSystem {
         system = system.arch; # "x86_64-linux"
-        modules = system.modules;
+        modules = system.modules ++ maybeAttachHome "nixos" mesh system;
         specialArgs = {
-          inherit mesh;
+          inherit self mesh;
         };
       };
 
@@ -22,17 +37,7 @@ let
       mesh = meshFor name;
     in
       nix-darwin.lib.darwinSystem {
-        modules = system.modules ++ lib.mkIf (system ? "home") [
-          home-manager.darwinModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users = system.home;
-            home-manager.extraSpecialArgs = {
-              inherit mesh;
-            };
-          }
-        ];
+        modules = system.modules ++ maybeAttachHome "darwin" mesh system;
         specialArgs = {
           inherit self mesh;
         };

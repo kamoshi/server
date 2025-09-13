@@ -79,6 +79,9 @@
           sops-nix.nixosModules.sops
           ./hosts/megumu
         ];
+        home = {
+          kamov = ./home/server;
+        };
       };
 
       # nitori
