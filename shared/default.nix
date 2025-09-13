@@ -63,16 +63,18 @@ let
 
   meshFor = devices: folders: device: {
     devices =
-      lib.filterAttrs (name: _: name != device) devices;
+      lib.pipe devices [
+        (lib.filterAttrs (name: _: name != device))
+        (lib.mapAttrs (_: system: { inherit (system) id name; }))
+      ];
     folders =
-      lib.mapAttrs (_: folder:
-        let
+      lib.pipe folders [
+        (lib.filterAttrs (_: folder: lib.hasAttr device folder.path))
+        (lib.mapAttrs (_: folder: folder // {
           path = folder.path.${device};
           devices = lib.filter (d: d != device) (lib.attrNames folder.path);
-        in
-          folder // { inherit path devices; }
-      )
-        (lib.filterAttrs (_: folder: lib.hasAttr device folder.path) folders);
+        }))
+      ];
   };
 in {
   inherit mkNixOS mkDarwin mkHome meshFor;
