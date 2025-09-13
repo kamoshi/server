@@ -39,7 +39,7 @@
       "spotify"
       "obsidian"
       "krita"
-      "syncthing-app"
+      "calibre"
     ];
   };
 
