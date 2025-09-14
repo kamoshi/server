@@ -5,74 +5,75 @@
 let
   lib = nixpkgs.lib;
 
-  maybeAttachHome = type: mesh: system:
-    if system ? "home"
+  maybeAttachHome = type: mesh: device:
+    if device ? "home"
       then [
         home-manager."${type}Modules".home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users = system.home;
+          home-manager.users = device.home;
           home-manager.extraSpecialArgs = {
-            inherit mesh;
+            inherit device mesh;
           };
         }
       ]
       else [];
 
-  mkNixOS = meshFor: name: system:
+  mkNixOS = meshFor: key: device:
     let
-      mesh = meshFor name;
+      mesh = meshFor key;
     in
       lib.nixosSystem {
-        system = system.arch; # "x86_64-linux"
-        modules = system.modules ++ maybeAttachHome "nixos" mesh system;
+        system = device.arch; # "x86_64-linux"
+        modules = device.modules ++ maybeAttachHome "nixos" mesh device;
         specialArgs = {
-          inherit self mesh;
+          inherit self device mesh;
         };
       };
 
-  mkDarwin = meshFor: name: system:
+  mkDarwin = meshFor: key: device:
     let
-      mesh = meshFor name;
+      mesh = meshFor key;
     in
       nix-darwin.lib.darwinSystem {
-        modules = system.modules ++ maybeAttachHome "darwin" mesh system;
+        system = device.arch;
+        modules = device.modules ++ maybeAttachHome "darwin" mesh device;
         specialArgs = {
-          inherit self mesh;
+          inherit self mesh device;
         };
       };
 
-  mkHome = meshFor: name: system:
+  mkHome = meshFor: key: device:
     let
-      mesh = meshFor name;
+      mesh = meshFor key;
     in
       home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.${system.arch};
+        pkgs = nixpkgs.legacyPackages.${device.arch};
 
         # Specify your home configuration modules here, for example,
         # the path to your home.nix.
-        modules = system.modules;
+        modules = device.modules;
 
         # Optionally use extraSpecialArgs
         # to pass through arguments to home.nix
         extraSpecialArgs = {
-          inherit mesh;
+          inherit device mesh;
         };
       };
 
-  meshFor = devices: folders: device: {
+  meshFor = devices: folders: key: {
     devices =
       lib.pipe devices [
-        (lib.filterAttrs (name: _: name != device))
-        (lib.mapAttrs (_: system: { inherit (system) id name; }))
+        (lib.filterAttrs (other: _: other != key))
+        (lib.mapAttrs (_: device: { inherit (device) id name; }))
       ];
     folders =
       lib.pipe folders [
-        (lib.filterAttrs (_: folder: lib.hasAttr device folder.path))
+        (lib.filterAttrs (_: folder: lib.hasAttr key folder.path))
         (lib.mapAttrs (_: folder: folder // {
-          path = folder.path.${device};
-          devices = lib.filter (d: d != device) (lib.attrNames folder.path);
+          path = folder.path.${key};
+          devices = lib.filter (other: other != key) (lib.attrNames folder.path);
         }))
       ];
   };

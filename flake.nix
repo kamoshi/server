@@ -45,6 +45,8 @@
         type = Type.Darwin;
         arch = "aarch64-darwin";
         modules = [
+          # Let Determinate Nix handle Nix configuration
+          ({ ... }: { nix.enable = false; })
           ./hosts/aya
         ];
         home = {
@@ -141,6 +143,7 @@
     {
       nixosConfigurations = lib.pipe devices [
         (lib.filterAttrs (matches Type.NixOS))
+        (lib.mapAttrs (key: device: device // { inherit key; }))
         (lib.mapAttrs (shared.mkNixOS meshFor))
       ];
 
@@ -148,11 +151,13 @@
       # $ darwin-rebuild build --flake .#aya
       darwinConfigurations = lib.pipe devices [
         (lib.filterAttrs (matches Type.Darwin))
+        (lib.mapAttrs (key: device: device // { inherit key; }))
         (lib.mapAttrs (shared.mkDarwin meshFor))
       ];
 
       homeConfigurations = lib.pipe devices [
         (lib.filterAttrs (matches Type.Home))
+        (lib.mapAttrs (key: device: device // { inherit key; }))
         (lib.mapAttrs (shared.mkHome meshFor))
       ];
     };

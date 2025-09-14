@@ -1,5 +1,7 @@
-{ self, pkgs, ... }:
-{
+{ self, pkgs, device,... }:
+let
+  user = "kamov";
+in {
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
   environment.systemPackages =
@@ -10,12 +12,12 @@
   programs.fish.enable = true;
 
   networking = {
-    computerName = "Aya";
-    hostName = "aya";
-    localHostName = "aya";
+    computerName = device.name;
+    hostName = device.key;
+    localHostName = device.key;
   };
 
-  users.users.kamov.home = "/Users/kamov";
+  users.users.${user}.home = "/Users/${user}";
 
   homebrew = {
     enable = true;
@@ -48,15 +50,37 @@
 
   security.pam.services.sudo_local.touchIdAuth = true;
 
-  system.primaryUser = "kamov";
+  system = {
+    # Used for backwards compatibility, please read the changelog before changing.
+    # $ darwin-rebuild changelog
+    stateVersion = 6;
 
-  # Set Git commit hash for darwin-version.
-  system.configurationRevision = self.rev or self.dirtyRev or null;
+    # Set Git commit hash for darwin-version.
+    configurationRevision = self.rev or self.dirtyRev or null;
 
-  # Used for backwards compatibility, please read the changelog before changing.
-  # $ darwin-rebuild changelog
-  system.stateVersion = 6;
+    primaryUser = user;
+
+    defaults = {
+      NSGlobalDomain = {
+        AppleShowAllExtensions = true;
+
+        # 120, 90, 60, 30, 12, 6, 2
+        KeyRepeat = 2;
+
+        # 120, 94, 68, 35, 25, 15
+        InitialKeyRepeat = 15;
+      };
+
+      dock = {
+        autohide = true;
+        show-recents = true;
+        launchanim = true;
+        orientation = "bottom";
+        tilesize = 48;
+      };
+    };
+  };
 
   # The platform the configuration will be used on.
-  nixpkgs.hostPlatform = "aarch64-darwin";
+  nixpkgs.hostPlatform = device.arch;
 }
