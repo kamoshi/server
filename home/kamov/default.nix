@@ -1,4 +1,4 @@
-{ config, pkgs, mesh, ... }:
+{ config, pkgs, mesh, utils, ... }:
 let
   user = "kamov";
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
@@ -15,6 +15,15 @@ in
     if isDarwin
       then "/Users/${user}"
       else "/home/${user}";
+
+  sops = {
+    age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
+    defaultSopsFile = ./.config.yaml;
+  };
+
+  sops.secrets."a" = {};
+
+  home.file."a".text = config.sops.secrets."a".path;
 
   services.syncthing = {
     enable = true;
@@ -44,6 +53,11 @@ in
     };
   };
 
+  xdg.configFile = utils.home.symlink config [
+    "zed"
+    "nvim"
+  ];
+
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
@@ -65,10 +79,6 @@ in
     #   echo "Hello, ${config.home.username}!"
     # '')
   ];
-
-  xdg.configFile."zed/settings.json".source = ./zed/settings.json;
-  xdg.configFile."newsboat/config".source = ./newsboat/config;
-  xdg.configFile."newsboat/urls".source = ./newsboat/urls;
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.

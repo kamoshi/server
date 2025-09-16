@@ -55,4 +55,9 @@ in
   };
 
   home.shell.enableFishIntegration = true;
+
+  home.packages = with pkgs; [
+    age
+    nixd
+  ];
 }

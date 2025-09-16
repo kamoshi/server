@@ -1,8 +1,8 @@
-{ self, nixpkgs, nix-darwin, home-manager, ... }:
-
+inputs@{ self, nixpkgs, nix-darwin, home-manager, ... }:
 # Functions that takes a system's name and its configuration,
 # and return the appropriate flake output.
 let
+  utilHome = import ./home.nix inputs;
   lib = nixpkgs.lib;
 
   maybeAttachHome = type: mesh: device:
@@ -15,6 +15,7 @@ let
           home-manager.users = device.home;
           home-manager.extraSpecialArgs = {
             inherit device mesh;
+            utils = { home = utilHome; };
           };
         }
       ]
@@ -59,6 +60,7 @@ let
         # to pass through arguments to home.nix
         extraSpecialArgs = {
           inherit device mesh;
+          utils = { home = utilHome; };
         };
       };
 

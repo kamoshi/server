@@ -1,0 +1,7 @@
+keys:
+  - &kamov age1kc4wekjm72yckyawapdng4565lkang6fxdf6haxuge6w43mpwvxq87q9vc
+
+creation_rules:
+  - path_regex: ^home/kamov/.*\.ya?ml$
+    key_groups:
+      - age: [*kamov]

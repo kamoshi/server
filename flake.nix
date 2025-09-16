@@ -25,7 +25,7 @@
 
   outputs = inputs@{ nixpkgs, sops-nix, ... }:
   let
-    shared = import ./shared inputs;
+    util = import ./util inputs;
     lib = nixpkgs.lib;
 
     Type = {
@@ -61,6 +61,7 @@
         type = Type.Home;
         arch = "x86_64-linux";
         modules = [
+          inputs.sops-nix.homeManagerModules.sops
           ./home/kamov
         ];
       };
@@ -138,13 +139,13 @@
       };
     };
 
-    meshFor = shared.meshFor devices folders;
+    meshFor = util.meshFor devices folders;
   in
     {
       nixosConfigurations = lib.pipe devices [
         (lib.filterAttrs (matches Type.NixOS))
         (lib.mapAttrs (key: device: device // { inherit key; }))
-        (lib.mapAttrs (shared.mkNixOS meshFor))
+        (lib.mapAttrs (util.mkNixOS meshFor))
       ];
 
       # Build darwin flake using:
@@ -152,13 +153,13 @@
       darwinConfigurations = lib.pipe devices [
         (lib.filterAttrs (matches Type.Darwin))
         (lib.mapAttrs (key: device: device // { inherit key; }))
-        (lib.mapAttrs (shared.mkDarwin meshFor))
+        (lib.mapAttrs (util.mkDarwin meshFor))
       ];
 
       homeConfigurations = lib.pipe devices [
         (lib.filterAttrs (matches Type.Home))
         (lib.mapAttrs (key: device: device // { inherit key; }))
-        (lib.mapAttrs (shared.mkHome meshFor))
+        (lib.mapAttrs (util.mkHome meshFor))
       ];
     };
 }

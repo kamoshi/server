@@ -1,8 +1,6 @@
-{ config, pkgs, ... }:
+{ config, pkgs, mesh, device, utils, ... }:
 let
-  device = "nitori";
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
-  mesh = import ../../mesh.nix { inherit device; inherit (pkgs) lib; };
 in
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -41,6 +39,11 @@ in
       inherit (mesh) devices folders;
     };
   };
+
+  xdg.configFile = utils.home.symlink config [
+    "zed"
+    "nvim"
+  ];
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
