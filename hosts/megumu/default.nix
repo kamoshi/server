@@ -2,7 +2,7 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ pkgs, ... }:
+{ pkgs, vpn, ... }:
 let
   ssh = 39016;
   pathBackup = "/var/backup/postgres";
@@ -168,10 +168,13 @@ in {
   networking.wireguard.enable = true;
   networking.wireguard.interfaces = {
     wg0 = {
-      # IP address and subnet
-      ips = [ "10.0.0.1/24" ];
-      # The port that WireGuard listens to. Must be accessible by the client.
-      listenPort = 42069;
+      # Path to the private key file.
+      privateKeyFile = "/root/wireguard/kamoshi.key";
+
+      # ips        - IP address and subnet
+      # peers      - List of peers
+      # listenPort - Port to listen on
+      inherit (vpn) ips peers listenPort;
 
       # This allows the wireguard server to route your traffic to the internet and hence be like a VPN
       # For this to work you have to set the dnsserver IP of your router (or dnsserver of choice) in your clients
@@ -183,24 +186,6 @@ in {
       postShutdown = ''
         ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.0.0.0/24 -o eth0 -j MASQUERADE
       '';
-
-      # Path to the private key file.
-      privateKeyFile = "/root/wireguard/kamoshi.key";
-
-      peers = [
-        { # Arch
-          publicKey = "9UISV736vJr39rHCvTuJeF72vjSxnD8DJgF0NZYzLTU=";
-          allowedIPs = [ "10.0.0.2/32" ];
-        }
-        { # Xiaomi
-          publicKey = "THSJl4nUJCU3cUX1egy9XojocTocLXG4+UoNEuYztXw=";
-          allowedIPs = [ "10.0.0.3/32" ];
-        }
-        { # aya
-          publicKey = "sJ5ri5XPMgsMsHTZVR9mzo02JRubA13Zoh6lKNMTqEE=";
-          allowedIPs = [ "10.0.0.4/32" ];
-        }
-      ];
     };
   };
 

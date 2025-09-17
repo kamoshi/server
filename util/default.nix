@@ -2,8 +2,8 @@ inputs@{ self, nixpkgs, nix-darwin, home-manager, ... }:
 # Functions that takes a system's name and its configuration,
 # and return the appropriate flake output.
 let
-  utilHome = import ./home.nix inputs;
-  lib = nixpkgs.lib;
+  utilsHome = import ./home.nix inputs;
+  lib       = nixpkgs.lib;
 
   maybeAttachHome = type: mesh: device:
     if device ? "home"
@@ -15,39 +15,42 @@ let
           home-manager.users = device.home;
           home-manager.extraSpecialArgs = {
             inherit device mesh;
-            utils = { home = utilHome; };
+            utils = { home = utilsHome; };
           };
         }
       ]
       else [];
 
-  mkNixOS = meshFor: key: device:
+  mkNixOS = meshFor: vpnFor: key: device:
     let
       mesh = meshFor key;
+      vpn  = vpnFor key;
     in
       lib.nixosSystem {
         system = device.arch; # "x86_64-linux"
         modules = device.modules ++ maybeAttachHome "nixos" mesh device;
         specialArgs = {
-          inherit self device mesh;
+          inherit self device mesh vpn;
         };
       };
 
-  mkDarwin = meshFor: key: device:
+  mkDarwin = meshFor: vpnFor: key: device:
     let
       mesh = meshFor key;
+      vpn  = vpnFor key;
     in
       nix-darwin.lib.darwinSystem {
         system = device.arch;
         modules = device.modules ++ maybeAttachHome "darwin" mesh device;
         specialArgs = {
-          inherit self mesh device;
+          inherit self device mesh vpn;
         };
       };
 
-  mkHome = meshFor: key: device:
+  mkHome = meshFor: vpnFor: key: device:
     let
       mesh = meshFor key;
+      vpn  = vpnFor key;
     in
       home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.${device.arch};
@@ -59,8 +62,8 @@ let
         # Optionally use extraSpecialArgs
         # to pass through arguments to home.nix
         extraSpecialArgs = {
-          inherit device mesh;
-          utils = { home = utilHome; };
+          inherit device mesh vpn;
+          utils = { home = utilsHome; };
         };
       };
 
@@ -79,6 +82,34 @@ let
         }))
       ];
   };
+
+  vpnFor = devices: key:
+    let
+      device = devices.${key};
+      host = device.vpn;
+      peers =
+        if host ? "server" && host.server
+          then # get all other devices
+            lib.pipe devices [
+              (lib.filterAttrs (k: v: k != key && v ? "vpn"))
+              (lib.mapAttrsToList (_: v: {
+                publicKey = v.vpn.pubkey;
+                allowedIPs = [ "${v.vpn.ip}/32" ];
+              }))
+            ]
+          else # find server
+            lib.pipe devices [
+              (lib.filterAttrs (_: v: v ? "vpn" && v.vpn ? "server" && v.vpn.server))
+              (lib.mapAttrsToList (_: v: {
+                publicKey = v.vpn.pubkey;
+                allowedIPs = [ "${v.vpn.ip}/32" ];
+              }))
+            ];
+    in {
+      ips = [ "${host.ip}/24" ];
+      listenPort = 42069;
+      inherit peers;
+    };
 in {
-  inherit mkNixOS mkDarwin mkHome meshFor;
+  inherit mkNixOS mkDarwin mkHome meshFor vpnFor;
 }

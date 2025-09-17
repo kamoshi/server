@@ -52,6 +52,10 @@
         home = {
           kamov = ./home/kamov;
         };
+        vpn = {
+          ip = "10.0.0.4";
+          pubkey = "sJ5ri5XPMgsMsHTZVR9mzo02JRubA13Zoh6lKNMTqEE=";
+        };
       };
 
       # momiji
@@ -64,12 +68,20 @@
           inputs.sops-nix.homeManagerModules.sops
           ./home/kamov
         ];
+        vpn = {
+          ip = "10.0.0.2";
+          pubkey = "9UISV736vJr39rHCvTuJeF72vjSxnD8DJgF0NZYzLTU=";
+        };
       };
 
       # hatate
       hatate = {
         id = "IF63A73-XV6LEZS-UZH7DEU-CPOJVEN-OQ3CEWZ-KHVNC5U-KNFCLLD-S7MOXAW";
         name = "Hatate";
+        vpn = {
+          ip = "10.0.0.3";
+          pubkey = "ro/HmBKJv/U2gWHByO88eBFeNoG9tOSPn37daENA6zY=";
+        };
       };
 
       # megumu
@@ -84,6 +96,11 @@
         ];
         home = {
           kamov = ./home/server;
+        };
+        vpn = {
+          ip = "10.0.0.1";
+          pubkey = "DML57aZ4EKYT330ncFL5j6aj4wlWyArfKzwjuCF0jAs=";
+          server = true;
         };
       };
 
@@ -140,12 +157,13 @@
     };
 
     meshFor = util.meshFor devices folders;
+    vpnFor = util.vpnFor devices;
   in
     {
       nixosConfigurations = lib.pipe devices [
         (lib.filterAttrs (matches Type.NixOS))
         (lib.mapAttrs (key: device: device // { inherit key; }))
-        (lib.mapAttrs (util.mkNixOS meshFor))
+        (lib.mapAttrs (util.mkNixOS meshFor vpnFor))
       ];
 
       # Build darwin flake using:
@@ -153,13 +171,13 @@
       darwinConfigurations = lib.pipe devices [
         (lib.filterAttrs (matches Type.Darwin))
         (lib.mapAttrs (key: device: device // { inherit key; }))
-        (lib.mapAttrs (util.mkDarwin meshFor))
+        (lib.mapAttrs (util.mkDarwin meshFor vpnFor))
       ];
 
       homeConfigurations = lib.pipe devices [
         (lib.filterAttrs (matches Type.Home))
         (lib.mapAttrs (key: device: device // { inherit key; }))
-        (lib.mapAttrs (util.mkHome meshFor))
+        (lib.mapAttrs (util.mkHome meshFor vpnFor))
       ];
     };
 }

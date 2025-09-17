@@ -56,6 +56,8 @@ in
   xdg.configFile = utils.home.symlink config [
     "zed"
     "nvim"
+    "newsboat/config"
+    "newsboat/urls"
   ];
 
   # The home.packages option allows you to install Nix packages into your
