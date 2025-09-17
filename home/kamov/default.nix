@@ -1,4 +1,4 @@
-{ config, pkgs, mesh, utils, ... }:
+{ config, pkgs, mesh, vpn, utils, ... }:
 let
   user = "kamov";
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
@@ -81,6 +81,8 @@ in
     #   echo "Hello, ${config.home.username}!"
     # '')
   ];
+
+  home.file."wireguard/momiji.conf".text = vpn.text;
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.

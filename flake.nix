@@ -101,6 +101,7 @@
           ip = "10.0.0.1";
           pubkey = "DML57aZ4EKYT330ncFL5j6aj4wlWyArfKzwjuCF0jAs=";
           server = true;
+          endpoint = "94.130.182.219";
         };
       };
 

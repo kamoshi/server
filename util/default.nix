@@ -63,7 +63,10 @@ let
         # to pass through arguments to home.nix
         extraSpecialArgs = {
           inherit device mesh vpn;
-          utils = { home = utilsHome; };
+          utils = {
+            inherit vpnFor;
+            home = utilsHome;
+          };
         };
       };
 
@@ -87,28 +90,45 @@ let
     let
       device = devices.${key};
       host = device.vpn;
-      peers =
-        if host ? "server" && host.server
-          then # get all other devices
-            lib.pipe devices [
-              (lib.filterAttrs (k: v: k != key && v ? "vpn"))
-              (lib.mapAttrsToList (_: v: {
-                publicKey = v.vpn.pubkey;
-                allowedIPs = [ "${v.vpn.ip}/32" ];
-              }))
-            ]
-          else # find server
-            lib.pipe devices [
-              (lib.filterAttrs (_: v: v ? "vpn" && v.vpn ? "server" && v.vpn.server))
-              (lib.mapAttrsToList (_: v: {
-                publicKey = v.vpn.pubkey;
-                allowedIPs = [ "${v.vpn.ip}/32" ];
-              }))
-            ];
+      listenPort = 42069;
+
+      other =
+        lib.mapAttrsToList (_: v: v) (
+          if host ? "server" && host.server
+            then # get all other devices
+              lib.filterAttrs (k: v: k != key && v ? "vpn") devices
+            else # find server
+              lib.filterAttrs (_: v: v ? "vpn" && v.vpn ? "server" && v.vpn.server) devices
+        );
     in {
       ips = [ "${host.ip}/24" ];
-      listenPort = 42069;
-      inherit peers;
+      inherit listenPort;
+
+      peers =
+        map (v: {
+          publicKey = v.vpn.pubkey;
+          allowedIPs = [ "${v.vpn.ip}/32" ];
+        }) other;
+
+      text = ''
+        [Interface]
+        Address = ${host.ip}/24
+        ListenPort = ${toString listenPort}
+        PrivateKey = <private_key>
+
+        ${lib.concatMapStringsSep "\n" (peer: ''
+          [Peer]
+          PublicKey = ${peer.vpn.pubkey}
+          AllowedIPs = ${peer.vpn.ip}/32
+          ${if peer.vpn ? "server" && peer.vpn.server
+            then ''
+              Endpoint = ${peer.vpn.endpoint}:${toString listenPort}
+              PersistentKeepalive = 25
+            ''
+            else ""
+          }
+        '') other}
+      '';
     };
 in {
   inherit mkNixOS mkDarwin mkHome meshFor vpnFor;
