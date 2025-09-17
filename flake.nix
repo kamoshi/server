@@ -47,6 +47,7 @@
         modules = [
           # Let Determinate Nix handle Nix configuration
           ({ ... }: { nix.enable = false; })
+          sops-nix.darwinModules.sops
           ./hosts/aya
         ];
         home = {

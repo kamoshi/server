@@ -5,17 +5,22 @@ let
   utilsHome = import ./home.nix inputs;
   lib       = nixpkgs.lib;
 
-  maybeAttachHome = type: mesh: device:
+  maybeAttachHome = type: device: mesh: vpn:
     if device ? "home"
       then [
         home-manager."${type}Modules".home-manager
         {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users = device.home;
-          home-manager.extraSpecialArgs = {
-            inherit device mesh;
-            utils = { home = utilsHome; };
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            users = device.home;
+            sharedModules = [
+              inputs.sops-nix.homeManagerModules.sops
+            ];
+            extraSpecialArgs = {
+              inherit device mesh vpn;
+              utils = { home = utilsHome; };
+            };
           };
         }
       ]
@@ -28,7 +33,7 @@ let
     in
       lib.nixosSystem {
         system = device.arch; # "x86_64-linux"
-        modules = device.modules ++ maybeAttachHome "nixos" mesh device;
+        modules = device.modules ++ maybeAttachHome "nixos" device mesh vpn;
         specialArgs = {
           inherit self device mesh vpn;
         };
@@ -41,7 +46,7 @@ let
     in
       nix-darwin.lib.darwinSystem {
         system = device.arch;
-        modules = device.modules ++ maybeAttachHome "darwin" mesh device;
+        modules = device.modules ++ maybeAttachHome "darwin" device mesh vpn;
         specialArgs = {
           inherit self device mesh vpn;
         };

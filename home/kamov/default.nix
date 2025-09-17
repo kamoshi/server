@@ -16,14 +16,14 @@ in
       then "/Users/${user}"
       else "/home/${user}";
 
-  sops = {
-    age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
-    defaultSopsFile = ./.config.yaml;
-  };
+  # sops = {
+  #   age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
+  #   defaultSopsFile = ./.config.yaml;
+  # };
 
-  sops.secrets."a" = {};
+  # sops.secrets."a" = {};
 
-  home.file."a".text = config.sops.secrets."a".path;
+  # home.file."a".text = config.sops.secrets."a".path;
 
   services.syncthing = {
     enable = true;
@@ -54,8 +54,11 @@ in
   };
 
   xdg.configFile = utils.home.symlink config [
-    "zed"
+    # zed
+    "zed/settings.json"
+    # nvim
     "nvim"
+    # newsboat
     "newsboat/config"
     "newsboat/urls"
   ];
