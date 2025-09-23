@@ -81,7 +81,7 @@
   };
 
   kamov.miniflux = {
-    enable = false;
+    enable = true;
     domain = "rss.kamoshi.org";
     port = 2137;
     bind = "127.0.0.1";

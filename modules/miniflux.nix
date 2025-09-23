@@ -102,8 +102,8 @@ in {
 
     # Database
     # ----------
-    services.postgresqlBackup.databases = [
-      "miniflux"
-    ];
+    # services.postgresqlBackup.databases = [
+    #   "miniflux"
+    # ];
   };
 }
