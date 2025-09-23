@@ -42,6 +42,10 @@ in {
       "obsidian"
       "krita"
       "calibre"
+      # proton
+      "proton-mail"
+      "proton-pass"
+      "proton-drive"
     ];
   };
 
