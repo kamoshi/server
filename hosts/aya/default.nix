@@ -42,6 +42,7 @@ in {
       "obsidian"
       "krita"
       "calibre"
+      "netnewswire"
       # proton
       "proton-mail"
       "proton-pass"
@@ -81,6 +82,24 @@ in {
         launchanim = true;
         orientation = "bottom";
         tilesize = 48;
+        autohide-delay = 0.0;
+
+        persistent-apps = [
+          "/System/Applications/Launchpad.app"
+          "/System/Applications/System Settings.app"
+          "/Applications/Proton Mail.app"
+          "/Applications/Proton Pass.app"
+          "/Applications/NetNewsWire.app"
+          "/Applications/calibre.app"
+          "/Applications/Obsidian.app"
+          "/Applications/Firefox.app"
+          "/Applications/Discord.app"
+          "/Applications/Steam.app"
+          "/Applications/Anki.app"
+          "/Applications/Ghostty.app"
+          "/Applications/Zed.app"
+          "/Applications/Spotify.app"
+        ];
       };
     };
   };
