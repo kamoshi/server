@@ -234,15 +234,14 @@ in {
       paths = [
         pathBackup
       ];
-      repository = "rclone:proton:/backup/kamoshi";
+      repository = "/data/backup/megumu";
       initialize = true;
       pruneOpts = [
         "--keep-daily 7"
         "--keep-weekly 5"
         "--keep-monthly 12"
       ];
-      passwordFile = "/root/secret/rclone/password";
-      rcloneConfigFile = "/root/secret/rclone/rclone.conf";
+      passwordFile = "/root/secret/backup/password";
     };
   };
 }
