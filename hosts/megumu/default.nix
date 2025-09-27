@@ -102,10 +102,15 @@ in {
     gnumake
   ];
 
+  boot.kernel.sysctl = {
+    "net.ipv4.ip_forward" = true;
+  };
+
   networking = {
     firewall = {
       enable = true;
       allowedTCPPorts = [ 22 ssh ];
+      trustedInterfaces = [ "wg0" ];
     };
   };
 
@@ -176,16 +181,16 @@ in {
       # listenPort - Port to listen on
       inherit (vpn) ips peers listenPort;
 
-      # This allows the wireguard server to route your traffic to the internet and hence be like a VPN
-      # For this to work you have to set the dnsserver IP of your router (or dnsserver of choice) in your clients
-      postSetup = ''
-        ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.0.0.0/24 -o eth0 -j MASQUERADE
-      '';
+      # # This allows the wireguard server to route your traffic to the internet and hence be like a VPN
+      # # For this to work you have to set the dnsserver IP of your router (or dnsserver of choice) in your clients
+      # postSetup = ''
+      #   ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.0.0.0/24 -o eth0 -j MASQUERADE
+      # '';
 
-      # This undoes the above command
-      postShutdown = ''
-        ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.0.0.0/24 -o eth0 -j MASQUERADE
-      '';
+      # # This undoes the above command
+      # postShutdown = ''
+      #   ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.0.0.0/24 -o eth0 -j MASQUERADE
+      # '';
     };
   };
 

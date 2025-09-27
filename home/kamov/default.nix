@@ -67,6 +67,7 @@ in
   # environment.
   home.packages = with pkgs; [
     nixd
+    gemini-cli
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello
@@ -85,7 +86,7 @@ in
     # '')
   ];
 
-  home.file."wireguard/momiji.conf".text = vpn.text;
+  home.file."wireguard/wg0.conf".text = vpn.text;
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
