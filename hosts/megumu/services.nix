@@ -2,14 +2,14 @@
 {
   # Forgejo
   # =====
-  sops.secrets."kanidm/forgejo" = {
-    owner = "git";
-    group = "kanidm";
-    mode = "0440";
-  };
+  # sops.secrets."kanidm/forgejo" = {
+  #   owner = "git";
+  #   group = "kanidm";
+  #   mode = "0440";
+  # };
 
   kamov.forgejo = {
-    enable = true;
+    enable = false;
     domain = "git.kamoshi.org";
     port = 3200;
     bind = "127.0.0.1";
@@ -19,7 +19,7 @@
   # Gatus
   # =====
   kamov.gatus = {
-    enable = true;
+    enable = false;
     domain = "status.kamoshi.org";
     port = 2138;
     bind = "127.0.0.1";
@@ -27,17 +27,17 @@
 
   # Grafana
   # =======
-  sops.secrets."grafana/secret_key" = lib.mkIf config.kamov.grafana.enable {
-    owner = "grafana";
-    group = "grafana";
-    mode = "0400";
-  };
+  # sops.secrets."grafana/secret_key" = lib.mkIf config.kamov.grafana.enable {
+  #   owner = "grafana";
+  #   group = "grafana";
+  #   mode = "0400";
+  # };
 
-  sops.secrets."grafana/client_secret" = lib.mkIf config.kamov.grafana.enable {
-    owner = "grafana";
-    group = "kanidm";
-    mode = "0440";
-  };
+  # sops.secrets."grafana/client_secret" = lib.mkIf config.kamov.grafana.enable {
+  #   owner = "grafana";
+  #   group = "kanidm";
+  #   mode = "0440";
+  # };
 
   kamov.grafana = {
     enable = false;
@@ -49,7 +49,7 @@
   # Kanidm
   # ======
   kamov.kanidm = {
-    enable = true;
+    enable = false;
     domain = "auth.kamoshi.org";
     port = 8443;
     bind = "127.0.0.1";
@@ -68,14 +68,14 @@
 
   # Miniflux
   # ========
-  sops.secrets."kanidm/miniflux" = lib.mkIf config.kamov.miniflux.enable {
-    owner = "miniflux";
-    group = "kanidm";
-    mode = "0440";
-  };
+  # sops.secrets."kanidm/miniflux" = lib.mkIf config.kamov.miniflux.enable {
+  #   owner = "miniflux";
+  #   group = "kanidm";
+  #   mode = "0440";
+  # };
 
   kamov.miniflux = {
-    enable = true;
+    enable = false;
     domain = "rss.kamoshi.org";
     port = 2137;
     bind = "127.0.0.1";

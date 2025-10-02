@@ -135,7 +135,7 @@ in {
   # };
 
   fileSystems."/data" = {
-    device = "u489674@u489674.your-storagebox.de:/megumu";
+    device = "u489674@u489674.your-storagebox.de:/home/megumu";
     neededForBoot = false;
     fsType = "fuse.sshfs";
     options = [
@@ -149,6 +149,7 @@ in {
       "IdentityFile=/root/.ssh/root@megumu"
       "ServerAliveInterval=15"
       "ServerAliveCountMax=3"
+      "port=23"
     ];
   };
 
