@@ -7,6 +7,8 @@ kanidm:
 grafana:
     secret_key: ENC[AES256_GCM,data:jXiDDTmhbx1w4G0H2JfaLlUXr5I=,iv:tSxLDgVM91PpVSkqmlIOEj62SXXk3EpkEWIKSkLeaeE=,tag:p/6y+cAuY9a/A8b94eK8lQ==,type:str]
     client_secret: ENC[AES256_GCM,data:Kh2CUajYy+pbkxLy61usuEf+XCVWt3hFCaCHh+b6KYsrTGUR8MQyIvHrUnihZeSW,iv:1rSUyC7K24O00Jo/mNp3ZT6xn29YGcJxzvT5mRoQmJ0=,tag:ULXI2zH4DzZ1W5L6Gxg+Ug==,type:str]
+wireguard: ENC[AES256_GCM,data:zbE0fXosreadwZMu8w/6u16FIoKg+vtvN/8uqPHcqovBssnQ0HpkEFHtUsY=,iv:ATyA55BkugNuGKTT04TFEZfgNmc8zrNe6JKT2uRptXo=,tag:mLSqozH/qQDOl+XpNfUSqQ==,type:str]
+restic: ENC[AES256_GCM,data:3kpjRoSFy3EJIX6+UCoNGdp+06jPKrrzMLLrxmOmncs=,iv:VQvcFLxQ6/DwoB0QtDEWqy3NYeBz9giO+bByCuDvc/A=,tag:mQd9gl+TqXKHCHg4b+pb9A==,type:str]
 sops:
     age:
         - recipient: age1d96wz0qq6q2yz7zajlle6zeqta2lylkvcjearq6v9eg0pln6hvgsl3z7p9
@@ -18,7 +20,7 @@ sops:
             NU1FMzhrbFpvcENZOUd6ZVFlS1lEVW8KQ3EboNRxI0iQ7Ip1OXPSyjVHErHjlhD7
             TKzLzynLgDLPLfPZAOHM32QXGzSTJ9sWzA88lgw3rFOizzwAE7EKkw==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-05-31T22:12:46Z"
-    mac: ENC[AES256_GCM,data:+lFhCBCJiREy6iMIQwR9j98PHrbNGsS9Gk7n42U5wAfSgcTJnVEZM61MixqbWx0dGjabgRRQ2G3OqkAfUKVEJHJQ03mBhE3sQiJCukY2+Wlzd5LEE6qIO+3gKqpLjceJ+wNnKa9s0IMnuK8dG1avTnUF3IZkaX8+aabiwxpiDp8=,iv:r5zBdu9iMNm9FtfCqiohKKCV5NTCvWJ4D/7tY9CeKXU=,tag:b4f7UuZ2wAS0W3E5yz0rUA==,type:str]
+    lastmodified: "2025-10-02T15:54:10Z"
+    mac: ENC[AES256_GCM,data:RHa3oM2lM5T7b7tWdcw4w5gT3RZ9UqeaVfk2uEFmJcbIrkr7ouunqkXKrCoo3FIb+DK6/mswUU9u9eaumu/iZ9umxah6bN6F5QMncBnS6n424P5wLAILnRaQkWyRkd4L+sieuARQUJ380sEZ1gklVYUSfagPLOZYnFSuROU3qk4=,iv:9nQWHnw4QaBKecYLJoy78a92YzY2US4noZG4r6r4rLA=,tag:5umrbW/bkhjjj5UE/Y+2bw==,type:str]
     unencrypted_suffix: _unencrypted
-    version: 3.10.2
+    version: 3.11.0

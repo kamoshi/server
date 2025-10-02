@@ -2,7 +2,7 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ pkgs, vpn, ... }:
+{ config, pkgs, vpn, ... }:
 let
   ssh = 39016;
   pathBackup = "/var/backup/postgres";
@@ -71,12 +71,12 @@ in {
   #   useXkbConfig = true; # use xkb.options in tty.
   # };
 
-  system = {
-    autoUpgrade = {
-      enable = true;
-      allowReboot = true;
-    };
-  };
+  # system = {
+  #   autoUpgrade = {
+  #     enable = true;
+  #     allowReboot = true;
+  #   };
+  # };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
@@ -86,6 +86,21 @@ in {
       automatic = true;
       dates = "weekly";
       options = "--delete-older-than 30d";
+    };
+  };
+
+  # Load secrets
+  sops = {
+    age.keyFile = "/root/.config/sops/age/keys.txt";
+    defaultSopsFile = ./sops.yaml;
+  };
+
+  sops.secrets = {
+    "wireguard" = {
+      mode = "0600";
+    };
+    "restic" = {
+      mode = "0600";
     };
   };
 
@@ -174,7 +189,7 @@ in {
   networking.wireguard.interfaces = {
     wg0 = {
       # Path to the private key file.
-      privateKeyFile = "/root/wireguard/kamoshi.key";
+      privateKeyFile = config.sops.secrets."wireguard".path;
 
       # ips        - IP address and subnet
       # peers      - List of peers
@@ -246,7 +261,7 @@ in {
         "--keep-weekly 5"
         "--keep-monthly 12"
       ];
-      passwordFile = "/root/secret/backup/password";
+      passwordFile = config.sops.secrets."restic".path;
     };
   };
 }

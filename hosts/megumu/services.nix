@@ -1,11 +1,5 @@
 { config, lib, ... }:
 {
-  # Load secrets
-  sops = {
-    age.keyFile = "/root/.config/sops/age/keys.txt";
-    defaultSopsFile = ./sops.yaml;
-  };
-
   # Forgejo
   # =====
   sops.secrets."kanidm/forgejo" = {

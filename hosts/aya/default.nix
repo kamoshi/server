@@ -26,6 +26,7 @@ in {
 
     taps = [];
     brews = [
+      "sops"
       "gpg"
       "ncdu"
       "dosbox-x"
@@ -85,7 +86,6 @@ in {
         autohide-delay = 0.0;
 
         persistent-apps = [
-          "/System/Applications/Launchpad.app"
           "/System/Applications/System Settings.app"
           "/Applications/Proton Mail.app"
           "/Applications/Proton Pass.app"

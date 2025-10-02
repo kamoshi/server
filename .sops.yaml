@@ -1,7 +1,12 @@
 keys:
   - &kamov age1kc4wekjm72yckyawapdng4565lkang6fxdf6haxuge6w43mpwvxq87q9vc
+  - &megumu age1d96wz0qq6q2yz7zajlle6zeqta2lylkvcjearq6v9eg0pln6hvgsl3z7p9
 
 creation_rules:
   - path_regex: ^home/kamov/.*\.ya?ml$
     key_groups:
       - age: [*kamov]
+
+  - path_regex: ^.*/megumu/.*\.ya?ml$
+    key_groups:
+      - age: [*megumu]
