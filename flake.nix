@@ -87,7 +87,7 @@
 
       # megumu
       megumu = {
-        id = "PDY7ZC6-GP7YQYO-QSA7HGR-BNWTEBQ-XYON6T4-RK365LH-JWCSYLF-UZQECQV";
+        id = "3R3IGHH-6Y2WZHC-R6EYP3U-55TP653-I4UMF3V-KIY3DUA-GCEQRYS-3BXBBQD";
         name = "Megumu";
         type = Type.NixOS;
         arch = "x86_64-linux";

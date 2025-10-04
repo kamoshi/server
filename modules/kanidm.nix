@@ -63,11 +63,11 @@ in {
             groups = [
               "miniflux.access"
 
-              "forgejo.access"
-              "forgejo.admins"
+              # "forgejo.access"
+              # "forgejo.admins"
 
-              "grafana.access"
-              "grafana.admins"
+              # "grafana.access"
+              # "grafana.admins"
             ];
           };
         };
@@ -76,8 +76,8 @@ in {
           # Miniflux
           "miniflux.access" = {};
           # Forgejo
-          "forgejo.access" = {};
-          "forgejo.admins" = {};
+          # "forgejo.access" = {};
+          # "forgejo.admins" = {};
           # Vikunja
           # "vikunja.access" = {};
         };
@@ -93,51 +93,52 @@ in {
               "miniflux.access" = [ "openid" "profile" "email" ];
             };
           };
-          forgejo = lib.mkIf config.kamov.forgejo.enable {
-            displayName = "Forgejo";
-            originUrl = "https://git.kamoshi.org/user/oauth2/kanidm/callback";
-            originLanding = "https://git.kamoshi.org/user/oauth2/kanidm";
-            basicSecretFile = config.sops.secrets."kanidm/forgejo".path;
-            preferShortUsername = true;
-            scopeMaps = {
-              "forgejo.access" = [ "openid" "profile" "email" ];
-            };
-            claimMaps.groups = {
-              joinType = "array";
-              valuesByGroup."forgejo.admins" = [ "admin" ];
-            };
-          };
-          # vikunja = lib.mkIf config.kamov.vikunja.enable {
-          #   displayName = "Vikunja";
-          #   originUrl = "https://kanban.kamoshi.org/auth/openid/";
-          #   originLanding = "https://kanban.kamoshi.org";
-          #   preferShortUsername = true;
-          #   scopeMaps = {
-          #     "miniflux.access" = [ "openid" "profile" "email" ];
-          #   };
-          # };
-        };
 
-        # Grafana
-        groups."grafana.access" = { };
-        groups."grafana.editors" = { };
-        groups."grafana.admins" = { };
-        groups."grafana.server-admins" = { };
-        systems.oauth2.grafana = lib.mkIf config.kamov.grafana.enable {
-          displayName = "Grafana";
-          originUrl = "https://data.kamoshi.org/login/generic_oauth";
-          originLanding = "https://data.kamoshi.org/login/generic_oauth";
-          basicSecretFile = config.sops.secrets."grafana/client_secret".path;
-          preferShortUsername = true;
-          scopeMaps."grafana.access" = [ "openid" "email" "profile" ];
-          claimMaps.groups = {
-            joinType = "array";
-            valuesByGroup = {
-              "grafana.editors" = [ "editor" ];
-              "grafana.admins" = [ "admin" ];
-              "grafana.server-admins" = [ "server_admin" ];
-            };
-          };
+    #       forgejo = lib.mkIf config.kamov.forgejo.enable {
+    #         displayName = "Forgejo";
+    #         originUrl = "https://git.kamoshi.org/user/oauth2/kanidm/callback";
+    #         originLanding = "https://git.kamoshi.org/user/oauth2/kanidm";
+    #         basicSecretFile = config.sops.secrets."kanidm/forgejo".path;
+    #         preferShortUsername = true;
+    #         scopeMaps = {
+    #           "forgejo.access" = [ "openid" "profile" "email" ];
+    #         };
+    #         claimMaps.groups = {
+    #           joinType = "array";
+    #           valuesByGroup."forgejo.admins" = [ "admin" ];
+    #         };
+    #       };
+    #       # vikunja = lib.mkIf config.kamov.vikunja.enable {
+    #       #   displayName = "Vikunja";
+    #       #   originUrl = "https://kanban.kamoshi.org/auth/openid/";
+    #       #   originLanding = "https://kanban.kamoshi.org";
+    #       #   preferShortUsername = true;
+    #       #   scopeMaps = {
+    #       #     "miniflux.access" = [ "openid" "profile" "email" ];
+    #       #   };
+    #       # };
+    #     };
+
+    #     # Grafana
+    #     groups."grafana.access" = { };
+    #     groups."grafana.editors" = { };
+    #     groups."grafana.admins" = { };
+    #     groups."grafana.server-admins" = { };
+    #     systems.oauth2.grafana = lib.mkIf config.kamov.grafana.enable {
+    #       displayName = "Grafana";
+    #       originUrl = "https://data.kamoshi.org/login/generic_oauth";
+    #       originLanding = "https://data.kamoshi.org/login/generic_oauth";
+    #       basicSecretFile = config.sops.secrets."grafana/client_secret".path;
+    #       preferShortUsername = true;
+    #       scopeMaps."grafana.access" = [ "openid" "email" "profile" ];
+    #       claimMaps.groups = {
+    #         joinType = "array";
+    #         valuesByGroup = {
+    #           "grafana.editors" = [ "editor" ];
+    #           "grafana.admins" = [ "admin" ];
+    #           "grafana.server-admins" = [ "server_admin" ];
+    #         };
+    #       };
         };
       };
     };

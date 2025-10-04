@@ -71,11 +71,6 @@ in {
 
     # Network
     # ----------
-    networking.firewall = {
-      enable = true;
-      interfaces.wg0.allowedTCPPorts = [ cfg.port ];
-    };
-
     services.nginx.virtualHosts."${cfg.domain}" = {
       enableACME = true;
       forceSSL = true;
@@ -83,6 +78,12 @@ in {
         proxyPass = "http://${cfg.bind}:${toString cfg.port}";
       };
     };
+
+    # Backup
+    # ------
+    services.postgresqlBackup.databases = [
+      "miniflux"
+    ];
 
     # services.fail2ban.jails = {
     #   miniflux = ''
@@ -99,11 +100,5 @@ in {
     #     journalmatch = _SYSTEMD_UNIT=miniflux.service
     #   '';
     # };
-
-    # Database
-    # ----------
-    # services.postgresqlBackup.databases = [
-    #   "miniflux"
-    # ];
   };
 }

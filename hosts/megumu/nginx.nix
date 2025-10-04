@@ -25,6 +25,23 @@
       recommendedOptimisation = true;
       recommendedProxySettings = true;
 
+      virtualHosts."_" = {
+        default = true;
+
+        extraConfig = ''
+          default_type text/html;
+          return 418 '
+          <html>
+          <head><title>418 I\'m a teapot</title></head>
+          <body bgcolor="white">
+            <center><h1>418 I\'m a teapot</h1></center>
+            <hr><center>teapot/0.4.11</center>
+          </body>
+          </html>
+          ';
+        '';
+      };
+
       virtualHosts."kamoshi.org" = {
         root = "/var/www/kamoshi.org";
         forceSSL = true;

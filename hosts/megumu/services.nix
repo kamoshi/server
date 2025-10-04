@@ -1,5 +1,51 @@
 { config, lib, ... }:
 {
+  # Syncthing
+  # =========
+  kamov.syncthing = {
+    enable = true;
+    port = 8384;
+    bind = "10.0.0.1";
+    user = "kamov";
+    configDir = "/home/kamov/.config/syncthing";
+  };
+
+  # Kotori
+  # ======
+  sops.secrets.kotori = {
+    mode = "0400";
+  };
+
+  kamov.kotori = {
+    enable = true;
+    envPath = config.sops.secrets.kotori.path;
+  };
+
+  # Kanidm
+  # ======
+  kamov.kanidm = {
+    enable = true;
+    domain = "auth.kamoshi.org";
+    port = 8443;
+    bind = "127.0.0.1";
+  };
+
+  # Miniflux
+  # ========
+  sops.secrets."kanidm/miniflux" = lib.mkIf config.kamov.miniflux.enable {
+    owner = "miniflux";
+    group = "kanidm";
+    mode = "0440";
+  };
+
+  kamov.miniflux = {
+    enable = true;
+    domain = "rss.kamoshi.org";
+    port = 2137;
+    bind = "127.0.0.1";
+    oauthSecretPath = config.sops.secrets."kanidm/miniflux".path;
+  };
+
   # Forgejo
   # =====
   # sops.secrets."kanidm/forgejo" = {
@@ -44,52 +90,6 @@
     domain = "data.kamoshi.org";
     port = 2139;
     bind = "127.0.0.1";
-  };
-
-  # Kanidm
-  # ======
-  kamov.kanidm = {
-    enable = false;
-    domain = "auth.kamoshi.org";
-    port = 8443;
-    bind = "127.0.0.1";
-  };
-
-  # Kotori
-  # ======
-  sops.secrets.kotori = {
-    mode = "0400";
-  };
-
-  kamov.kotori = {
-    enable = true;
-    envPath = config.sops.secrets.kotori.path;
-  };
-
-  # Miniflux
-  # ========
-  # sops.secrets."kanidm/miniflux" = lib.mkIf config.kamov.miniflux.enable {
-  #   owner = "miniflux";
-  #   group = "kanidm";
-  #   mode = "0440";
-  # };
-
-  kamov.miniflux = {
-    enable = false;
-    domain = "rss.kamoshi.org";
-    port = 2137;
-    bind = "127.0.0.1";
-    oauthSecretPath = config.sops.secrets."kanidm/miniflux".path;
-  };
-
-  # Syncthing
-  # =========
-  kamov.syncthing = {
-    enable = true;
-    port = 8384;
-    bind = "10.0.0.1";
-    user = "kamov";
-    configDir = "/home/kamov/.config/syncthing";
   };
 
   # Vikunja

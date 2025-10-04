@@ -45,6 +45,7 @@ in {
       "calibre"
       "netnewswire"
       # proton
+      "protonvpn"
       "proton-mail"
       "proton-pass"
       "proton-drive"
