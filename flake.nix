@@ -37,6 +37,11 @@
               default = 3000;
               description = "Port to listen on.";
             };
+            envFile = lib.mkOption {
+              type = lib.types.path;
+              default = "/var/lib/rss-summarizer/secrets.env";
+              description = "Path to environment file.";
+            };
             minifluxUrl = lib.mkOption {
               type = lib.types.str;
               default = "http://localhost:8080";
@@ -55,7 +60,7 @@
                 ExecStart = "${self.packages.x86_64-linux.rss-summarizer}/bin/rss-summarizer";
                 DynamicUser = true;
                 MemoryMax = "64M";
-                EnvironmentFile = "/var/lib/rss-summarizer/secrets.env";
+                EnvironmentFile = cfg.envFile;
                 Environment = [
                   "PORT=${toString cfg.port}"
                   "MINIFLUX_URL=${cfg.minifluxUrl}"
