@@ -72,7 +72,7 @@ impl EventHandler for Handler {
 
 pub async fn run() {
     // Configure the client with your Discord bot token in the environment.
-    let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
+    let token = env::var("TOKEN_DISCORD").expect("Expected a token in the environment");
     // Set gateway intents, which decides what events the bot will be notified about
     let intents = GatewayIntents::GUILD_MESSAGES
         | GatewayIntents::DIRECT_MESSAGES

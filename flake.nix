@@ -32,20 +32,23 @@
         in {
           options.services.rss-summarizer = {
             enable = lib.mkEnableOption "RSS Summarizer Service";
+
             port = lib.mkOption {
               type = lib.types.port;
               default = 3000;
               description = "Port to listen on.";
             };
+
+            portInternal = lib.mkOption {
+              type = lib.types.port;
+              default = 3001;
+              description = "Port to listen on. (internal)";
+            };
+
             envFile = lib.mkOption {
               type = lib.types.path;
               default = "/var/lib/rss-summarizer/secrets.env";
               description = "Path to environment file.";
-            };
-            minifluxUrl = lib.mkOption {
-              type = lib.types.str;
-              default = "http://localhost:8080";
-              description = "Miniflux API URL.";
             };
           };
 
@@ -63,7 +66,7 @@
                 EnvironmentFile = cfg.envFile;
                 Environment = [
                   "PORT=${toString cfg.port}"
-                  "MINIFLUX_URL=${cfg.minifluxUrl}"
+                  "PORT_INTERNAL=${toString cfg.portInternal}"
                 ];
                 Restart = "always";
                 RestartSec = "10s";

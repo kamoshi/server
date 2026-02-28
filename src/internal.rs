@@ -87,7 +87,7 @@ async fn test_miniflux() -> String {
 }
 
 async fn test_gemini() -> String {
-    let api_key = env::var("GEMINI_API_KEY").unwrap_or_default();
+    let api_key = env::var("TOKEN_GEMINI").unwrap_or_default();
     if api_key.is_empty() {
         return "GEMINI_API_KEY is not set".to_string();
     }
