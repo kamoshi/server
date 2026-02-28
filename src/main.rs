@@ -25,8 +25,8 @@ async fn main() {
         .await
         .expect("Failed to bind to internal port");
 
-    println!("External server running on {}", external_addr);
-    println!("Internal server running on {}", internal_addr);
+    println!("External server running on http://{}", external_addr);
+    println!("Internal server running on http://{}", internal_addr);
 
     let external_server = axum::serve(external_listener, external::router());
     let internal_server = axum::serve(internal_listener, internal::router());

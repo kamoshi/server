@@ -18,3 +18,4 @@ chrono = "0.4.44"
 # rss
 gemini-rust = "1.7.1"
 miniflux_api = "0.8.0"
+pulldown-cmark = "0.13.1"
