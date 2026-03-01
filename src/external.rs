@@ -37,6 +37,66 @@ Your goal is to provide a concise, sophisticated, and engaging editorial briefin
 - Maintain the original 'Read More' links but weave them naturally or place them at the end of sections.
 ";
 
+const STYLE: &str = r#"
+<style>
+    .summary-widget {
+        font-family: inherit;
+        font-size: var(--font-size-base);
+        color: var(--color-text-paragraph);
+        line-height: 1.6;
+    }
+    .summary-widget h1,
+    .summary-widget h2,
+    .summary-widget h3 {
+        color: var(--color-text-highlight);
+        margin-top: 1em;
+        margin-bottom: 0.4em;
+        font-weight: 600;
+    }
+    .summary-widget h1 {
+        font-size: var(--font-size-h1);
+    }
+    .summary-widget h2 {
+        font-size: var(--font-size-h2);
+        border-bottom: 1px solid var(--color-separator);
+        padding-bottom: 0.3em;
+    }
+    .summary-widget h3 {
+        font-size: var(--font-size-h3);
+    }
+    .summary-widget p {
+        margin-bottom: 1em;
+    }
+    .summary-widget a {
+        color: var(--color-primary);
+        text-decoration: none;
+    }
+    .summary-widget a:hover {
+        text-decoration: underline;
+    }
+    .summary-widget ul,
+    .summary-widget ol {
+        padding-left: 1.5em;
+        margin-bottom: 1em;
+        color: var(--color-text-base);
+    }
+    .summary-widget li {
+        margin-bottom: 0.4em;
+    }
+    .summary-widget strong {
+        color: var(--color-text-highlight);
+    }
+    .summary-widget blockquote {
+        border-left: 4px solid var(--color-primary);
+        padding: 0.5em 1em;
+        margin-left: 0;
+        color: var(--color-text-subdue);
+        background-color: var(--color-widget-background-highlight);
+        border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    }
+</style>
+"#;
+
 const MODEL: Model = Model::Gemini3Flash;
 
 type CachedSummary = (chrono::DateTime<Local>, String);
@@ -47,7 +107,9 @@ fn md_to_html(md: &str) -> String {
     let parser = pulldown_cmark::Parser::new(md);
     let mut html = String::new();
     pulldown_cmark::html::push_html(&mut html, parser);
-    html
+
+    // Inject a <style> block using the actual Glance :root variables.
+    format!("{}\n<div class='summary-widget'>{}\n</div>", STYLE, html)
 }
 
 async fn get_rss_data() -> (String, Vec<i64>) {
