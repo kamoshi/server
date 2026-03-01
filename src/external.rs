@@ -1,6 +1,10 @@
 use std::{env, sync::LazyLock};
 
-use axum::{routing::get, Router};
+use axum::{
+    response::{Html, IntoResponse, Response},
+    routing::get,
+    Router,
+};
 use chrono::{Duration, Local, Timelike, Utc};
 use gemini_rust::{Gemini, Model};
 use miniflux_api::{
@@ -104,7 +108,7 @@ async fn get_rss_data() -> (String, Vec<i64>) {
     }
 }
 
-async fn summary() -> impl axum::response::IntoResponse {
+async fn summary() -> Response {
     let mut cache = SUMMARY_CACHE.lock().await;
     let now = Local::now();
 
@@ -114,18 +118,26 @@ async fn summary() -> impl axum::response::IntoResponse {
         let n = now - Duration::hours(6);
 
         if c.date_naive() == n.date_naive() && (c.hour() / 12) == (n.hour() / 12) {
-            return axum::response::Html(cached_result.clone());
+            // Return cached HTML with Glance headers
+            return (
+                [
+                    ("Widget-Content-Type", "html"),
+                    ("Widget-Title", "News Summary"),
+                ],
+                Html(cached_result.clone()),
+            )
+                .into_response();
         }
     }
 
     let api_key = env::var("TOKEN_GEMINI").unwrap_or_default();
     if api_key.is_empty() {
-        return axum::response::Html("TOKEN_GEMINI is not set".into());
+        return "TOKEN_GEMINI is not set".into_response();
     }
 
     let client = match Gemini::with_model(api_key, MODEL) {
         Ok(c) => c,
-        Err(e) => return axum::response::Html(format!("Failed to create client: {}", e)),
+        Err(e) => return format!("Failed to create client: {e}").into_response(),
     };
 
     let (data, entry_ids) = get_rss_data().await;
@@ -159,14 +171,21 @@ async fn summary() -> impl axum::response::IntoResponse {
             }
             response.text()
         }
-        Err(e) => return axum::response::Html(format!("Error: {}", e)),
+        Err(e) => return format!("Error: {e}").into_response(),
     };
 
     let html = md_to_html(&result);
 
     *cache = Some((now, html.clone()));
 
-    axum::response::Html(html)
+    (
+        [
+            ("Widget-Content-Type", "html"),
+            ("Widget-Title", "News Summary"),
+        ],
+        Html(html),
+    )
+        .into_response()
 }
 
 pub fn router() -> Router {
