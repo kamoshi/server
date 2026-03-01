@@ -80,14 +80,14 @@ fn wrap_in_layout(inner_html: &str) -> String {
     page.render().into_inner()
 }
 
-async fn get_rss_data() -> String {
+async fn get_rss_data() -> (String, Vec<i64>) {
     // 1. Initialize the client for megumu
     // The domain is rss.kamoshi.org as defined in your Nix configuration
     let url = Url::parse("https://rss.kamoshi.org").unwrap();
 
     let api_token = env::var("TOKEN_MINIFLUX").unwrap_or_default();
     if api_token.is_empty() {
-        return "MINIFLUX_API_TOKEN is not set".to_string();
+        return ("MINIFLUX_API_TOKEN is not set".to_string(), vec![]);
     }
 
     let api = MinifluxApi::new_from_token(&url, api_token);
@@ -117,7 +117,7 @@ async fn get_rss_data() -> String {
 
     let entries = match entries {
         Ok(e) => e,
-        Err(err) => return format!("Failed to fetch entries: {:?}", err),
+        Err(err) => return (format!("Failed to fetch entries: {:?}", err), vec![]),
     };
 
     let entry_ids: Vec<i64> = entries.iter().map(|e| e.id).collect();
@@ -131,16 +131,10 @@ async fn get_rss_data() -> String {
         ));
     }
 
-    if !entry_ids.is_empty() {
-        let _ = api
-            .update_entries_status(entry_ids, EntryStatus::Read, &http_client)
-            .await;
-    }
-
     if output.is_empty() {
-        "No unread entries found.".to_string()
+        ("No unread entries found.".to_string(), vec![])
     } else {
-        output
+        (output, entry_ids)
     }
 }
 
@@ -170,8 +164,9 @@ async fn summary() -> impl axum::response::IntoResponse {
         }
     };
 
+    let (data, entry_ids) = get_rss_data().await;
+
     let time = Local::now().format("%Y-%m-%d %H:%M").to_string();
-    let data = get_rss_data().await;
     let data =
         format!("Current time: {time}\nI have the following articles from RSS tracker: {data}");
 
@@ -186,7 +181,20 @@ async fn summary() -> impl axum::response::IntoResponse {
         .execute()
         .await
     {
-        Ok(response) => response.text(),
+        Ok(response) => {
+            if !entry_ids.is_empty() {
+                let url = Url::parse("https://rss.kamoshi.org").unwrap();
+                let api_token = env::var("TOKEN_MINIFLUX").unwrap_or_default();
+                if !api_token.is_empty() {
+                    let api = MinifluxApi::new_from_token(&url, api_token);
+                    let http_client = Client::new();
+                    let _ = api
+                        .update_entries_status(entry_ids, EntryStatus::Read, &http_client)
+                        .await;
+                }
+            }
+            response.text()
+        }
         Err(e) => return axum::response::Html(wrap_in_layout(&format!("Error: {}", e))),
     };
 
