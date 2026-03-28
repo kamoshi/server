@@ -271,7 +271,7 @@ async fn index(State(state): State<AppState>, Query(query): Query<IndexQuery>) -
         }
     }).collect();
 
-    let html = state.jinja.render("hn/index.html", minijinja::context! {
+    let html = state.jinja.render("hn/index.jinja", minijinja::context! {
         filter => filter,
         sort => sort,
         date => date_str,
@@ -298,7 +298,7 @@ fn render_rating_group_html(jinja: &crate::JinjaEnv, id: i64, current_rating: Op
         RatingButton { val: "average",     emoji: "👋" },
         RatingButton { val: "thumbs_down", emoji: "👎" },
     ];
-    jinja.render("hn/rating_group.html", minijinja::context! {
+    jinja.render("hn/rating_group.jinja", minijinja::context! {
         id => id,
         current_rating => current_rating,
         buttons => buttons,

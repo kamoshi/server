@@ -43,8 +43,8 @@ pub fn make_jinja() -> JinjaEnv {
     #[cfg(not(debug_assertions))]
     {
         let mut env = minijinja::Environment::new();
-        env.add_template("hn/index.html", include_str!("../templates/hn/index.html")).unwrap();
-        env.add_template("hn/rating_group.html", include_str!("../templates/hn/rating_group.html")).unwrap();
+        env.add_template("hn/index.jinja", include_str!("../templates/hn/index.jinja")).unwrap();
+        env.add_template("hn/rating_group.jinja", include_str!("../templates/hn/rating_group.jinja")).unwrap();
         JinjaEnv { inner: env }
     }
 }
