@@ -1,0 +1,17 @@
+<div class="rating-group" id="rating-{{ id }}">
+    {% for btn in buttons %}
+        {% if current_rating == btn.val %}
+            <button class="rating-btn active"
+                    hx-delete="/hn/rate/{{ id }}"
+                    hx-target="#rating-{{ id }}"
+                    hx-swap="outerHTML">{{ btn.emoji }}</button>
+        {% else %}
+            <button class="rating-btn"
+                    hx-put="/hn/rate/{{ id }}"
+                    hx-vals='{"rating":"{{ btn.val }}"}'
+                    hx-include="#story-{{ id }} input[type=hidden]"
+                    hx-target="#rating-{{ id }}"
+                    hx-swap="outerHTML">{{ btn.emoji }}</button>
+        {% endif %}
+    {% endfor %}
+</div>

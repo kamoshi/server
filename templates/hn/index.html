@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HN Rater</title>
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 860px; margin: 0 auto; padding: 20px; line-height: 1.5; background: #f9f9f9; color: #333; }
+        h1 { margin: 0; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .date-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .date-label { font-weight: bold; font-size: 16px; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 14px; border-bottom: 1px solid #ddd; padding-bottom: 10px; flex-wrap: wrap; }
+        .sort-bar { margin-bottom: 14px; font-size: 13px; color: #555; }
+        .sort-bar a { color: #555; }
+        .btn { padding: 6px 12px; border: 1px solid #ccc; background: #fff; cursor: pointer; border-radius: 4px; text-decoration: none; color: #333; font-size: 13px; display: inline-block; }
+        .btn:hover { background: #eee; }
+        .btn-disabled { opacity: 0.35; cursor: default; pointer-events: none; }
+        .tab { text-decoration: none; color: #666; padding: 4px 8px; border-radius: 4px; font-size: 13px; }
+        .tab.active { background: #e0e0e0; color: #000; font-weight: bold; }
+        .badge { background: #ccc; border-radius: 10px; padding: 2px 6px; font-size: 11px; margin-left: 3px; }
+        .story { background: #fff; padding: 14px; margin-bottom: 8px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .story-title { font-size: 15px; font-weight: bold; text-decoration: none; color: #000; }
+        .story-title:hover { text-decoration: underline; }
+        .story-domain { color: #888; font-size: 12px; margin-left: 6px; }
+        .story-meta { font-size: 12px; color: #666; margin-top: 4px; margin-bottom: 8px; }
+        .story-meta a { color: #666; text-decoration: none; }
+        .story-meta a:hover { text-decoration: underline; }
+        .rating-group { display: inline-flex; gap: 4px; }
+        .rating-btn { padding: 4px 10px; border: 1px solid #ddd; background: #f0f0f0; cursor: pointer; border-radius: 4px; font-size: 15px; }
+        .rating-btn.active { background: #ffe4b5; border-color: #e0a000; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
+        .empty { color: #999; font-size: 14px; padding: 20px 0; }
+        .error { background: #fff0f0; border: 1px solid #f5c6cb; color: #721c24; padding: 10px 14px; border-radius: 4px; margin-bottom: 14px; font-size: 13px; }
+        input[type="date"] { padding: 5px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>HN Rater</h1>
+</div>
+
+<div class="date-nav">
+    <a href="/hn?filter={{ filter }}&sort={{ sort }}&date={{ prev_date }}" class="btn">← Prev</a>
+    <span class="date-label">{{ date }}</span>
+    {% if date == today %}
+        <span class="btn btn-disabled">Next →</span>
+    {% else %}
+        <a href="/hn?filter={{ filter }}&sort={{ sort }}&date={{ next_date }}" class="btn">Next →</a>
+    {% endif %}
+    <form method="GET" action="/hn" style="display:inline-flex; gap:5px; margin:0;">
+        <input type="hidden" name="filter" value="{{ filter }}">
+        <input type="hidden" name="sort" value="{{ sort }}">
+        <input type="date" name="date" value="{{ date }}">
+        <button type="submit" class="btn">Go</button>
+    </form>
+</div>
+
+{% if fetch_error %}
+    <div class="error">Could not reach Algolia: {{ fetch_error }}. Showing rated stories only.</div>
+{% endif %}
+
+<div class="tabs">
+    {% for tab in tabs %}
+        <a href="/hn?filter={{ tab.key }}&sort={{ sort }}&date={{ date }}" class="tab {% if filter == tab.key %}active{% endif %}">
+            {{ tab.label }} <span class="badge">{{ tab.count }}</span>
+        </a>
+    {% endfor %}
+</div>
+
+<div class="sort-bar">
+    Sort:
+    {% if sort == "points" %}
+        <strong>Points</strong> | <a href="/hn?filter={{ filter }}&sort=date&date={{ date }}">Date</a>
+    {% else %}
+        <a href="/hn?filter={{ filter }}&sort=points&date={{ date }}">Points</a> | <strong>Date</strong>
+    {% endif %}
+    &bull; <a href="/hn/export" target="_blank">Export JSON</a>
+</div>
+
+{% for story in stories %}
+    <div class="story" id="story-{{ story.id }}">
+        {# Hidden fields carry story data to the rate endpoint via hx-include #}
+        <input type="hidden" name="title"        value="{{ story.title }}">
+        <input type="hidden" name="url"          value="{{ story.url_raw }}">
+        <input type="hidden" name="author"       value="{{ story.author }}">
+        <input type="hidden" name="points"       value="{{ story.points }}">
+        <input type="hidden" name="num_comments" value="{{ story.num_comments }}">
+        <input type="hidden" name="created_at"   value="{{ story.created_at }}">
+
+        <a href="{{ story.title_url }}" target="_blank" class="story-title">{{ story.title }}</a>
+        {% if story.domain %}
+            <span class="story-domain">({{ story.domain }})</span>
+        {% endif %}
+        <div class="story-meta">
+            {{ story.points }} points by {{ story.author }} {{ story.time_ago }} |
+            <a href="https://news.ycombinator.com/item?id={{ story.id }}" target="_blank">{{ story.num_comments }} comments</a>
+        </div>
+        {{ story.rating_html|safe }}
+    </div>
+{% else %}
+    <p class="empty">No stories found.</p>
+{% endfor %}
+
+</body>
+</html>
