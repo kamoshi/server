@@ -25,6 +25,8 @@
       {
         packages.fukurou = naersk-lib.buildPackage {
           src = ./.;
+          nativeBuildInputs = with pkgs; [ pkg-config ];
+          buildInputs = with pkgs; [ sqlite ];
         };
         packages.default = self.packages.${system}.fukurou;
 
@@ -34,7 +36,9 @@
             rustc
             rustfmt
             rustPackages.clippy
+            pkg-config
           ];
+          buildInputs = with pkgs; [ sqlite ];
         };
       }
     )
