@@ -2,6 +2,7 @@ use std::env;
 
 use chrono::{Datelike, Timelike};
 use serenity::async_trait;
+use serenity::builder::CreateMessage;
 use serenity::http::Http;
 use serenity::model::gateway::Ready;
 use serenity::model::prelude::ChannelId;
@@ -12,7 +13,7 @@ use tokio::time::{sleep, Duration};
 
 fn init(ctx: Context) {
     tokio::spawn(async move {
-        let channel = ChannelId(841002228964786197);
+        let channel = ChannelId::new(841002228964786197);
         //let channel = ChannelId(1047123653847957544);
 
         let mut last_sent = 0_u32;
@@ -29,7 +30,7 @@ async fn papal(http: &Http, channel: &ChannelId, last_sent: &mut u32) {
 
     if d != *last_sent && h == 21 && m == 37 {
         channel
-            .send_message(&http, |m| m.content("papież"))
+            .send_message(&http, CreateMessage::new().content("papież"))
             .await
             .expect("TODO: panic message");
         *last_sent = d;
