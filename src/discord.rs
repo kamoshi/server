@@ -9,7 +9,7 @@ use serenity::model::prelude::ChannelId;
 use serenity::model::prelude::Message;
 use serenity::prelude::Context;
 use serenity::prelude::*;
-use tokio::time::{sleep, Duration};
+use tokio::time::{Duration, sleep};
 
 fn init(ctx: Context) {
     tokio::spawn(async move {

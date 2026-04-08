@@ -1,7 +1,7 @@
-mod external;
-mod internal;
 #[cfg(not(debug_assertions))]
 mod discord;
+mod external;
+mod internal;
 
 use std::env;
 use tokio::net::TcpListener;
@@ -19,7 +19,10 @@ impl JinjaEnv {
     pub fn render(&self, name: &str, ctx: impl serde::Serialize) -> String {
         #[cfg(debug_assertions)]
         {
-            let env = self.inner.acquire_env().expect("failed to acquire jinja env");
+            let env = self
+                .inner
+                .acquire_env()
+                .expect("failed to acquire jinja env");
             env.get_template(name).unwrap().render(ctx).unwrap()
         }
         #[cfg(not(debug_assertions))]
@@ -38,13 +41,28 @@ pub fn make_jinja() -> JinjaEnv {
             env.set_loader(minijinja::path_loader("templates"));
             Ok(env)
         });
-        JinjaEnv { inner: std::sync::Arc::new(reloader) }
+        JinjaEnv {
+            inner: std::sync::Arc::new(reloader),
+        }
     }
     #[cfg(not(debug_assertions))]
     {
         let mut env = minijinja::Environment::new();
-        env.add_template("hn/index.jinja", include_str!("../templates/hn/index.jinja")).unwrap();
-        env.add_template("hn/rating_group.jinja", include_str!("../templates/hn/rating_group.jinja")).unwrap();
+        env.add_template(
+            "hn/index.jinja",
+            include_str!("../templates/hn/index.jinja"),
+        )
+        .unwrap();
+        env.add_template(
+            "hn/rating_group.jinja",
+            include_str!("../templates/hn/rating_group.jinja"),
+        )
+        .unwrap();
+        env.add_template(
+            "rss/index.jinja",
+            include_str!("../templates/rss/index.jinja"),
+        )
+        .unwrap();
         JinjaEnv { inner: env }
     }
 }
@@ -85,11 +103,9 @@ async fn main() {
         .await
         .expect("Failed to run migrations");
 
-    let external_server = axum::serve(external_listener, external::router());
-    let internal_server = axum::serve(
-        internal_listener,
-        internal::router(pool, make_jinja()),
-    );
+    let jinja = make_jinja();
+    let external_server = axum::serve(external_listener, external::router(jinja.clone()));
+    let internal_server = axum::serve(internal_listener, internal::router(pool, jinja));
 
     tokio::select! {
         res = external_server => res.expect("External server failed"),

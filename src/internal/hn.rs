@@ -1,8 +1,8 @@
 use axum::{
+    Form, Json, Router,
     extract::{Path, Query, State},
     response::{Html, IntoResponse},
     routing::get,
-    Form, Json, Router,
 };
 use chrono::{NaiveDate, Utc};
 use reqwest::Client;
@@ -27,7 +27,10 @@ pub fn router(pool: SqlitePool, jinja: crate::JinjaEnv) -> Router {
 
     Router::new()
         .route("/", get(index))
-        .route("/rate/{id}", axum::routing::put(rate_story).delete(unrate_story))
+        .route(
+            "/rate/{id}",
+            axum::routing::put(rate_story).delete(unrate_story),
+        )
         .route("/export", get(export))
         .with_state(state)
 }
@@ -127,11 +130,17 @@ async fn fetch_day_algolia(client: &Client, date: NaiveDate) -> Result<Vec<Algol
         end - 1
     );
     let resp = client.get(&url).send().await.map_err(|e| e.to_string())?;
-    let data = resp.json::<AlgoliaResponse>().await.map_err(|e| e.to_string())?;
+    let data = resp
+        .json::<AlgoliaResponse>()
+        .await
+        .map_err(|e| e.to_string())?;
     Ok(data.hits)
 }
 
-async fn index(State(state): State<AppState>, Query(query): Query<IndexQuery>) -> impl IntoResponse {
+async fn index(
+    State(state): State<AppState>,
+    Query(query): Query<IndexQuery>,
+) -> impl IntoResponse {
     let filter = query.filter.unwrap_or_else(|| "all".to_string());
     let sort = query.sort.unwrap_or_else(|| "points".to_string());
 
@@ -139,8 +148,16 @@ async fn index(State(state): State<AppState>, Query(query): Query<IndexQuery>) -
     let today_str = today.format("%Y-%m-%d").to_string();
     let date = query.date.as_deref().and_then(parse_date).unwrap_or(today);
     let date_str = date.format("%Y-%m-%d").to_string();
-    let prev_date = date.pred_opt().unwrap_or(date).format("%Y-%m-%d").to_string();
-    let next_date = date.succ_opt().unwrap_or(date).format("%Y-%m-%d").to_string();
+    let prev_date = date
+        .pred_opt()
+        .unwrap_or(date)
+        .format("%Y-%m-%d")
+        .to_string();
+    let next_date = date
+        .succ_opt()
+        .unwrap_or(date)
+        .format("%Y-%m-%d")
+        .to_string();
     let (start_ts, end_ts) = day_bounds(date);
 
     // Fetch top 20 from Algolia (non-blocking on error)
@@ -175,16 +192,19 @@ async fn index(State(state): State<AppState>, Query(query): Query<IndexQuery>) -
         if title.is_empty() {
             continue;
         }
-        stories.insert(id, StoryData {
+        stories.insert(
             id,
-            title,
-            url: hit.url,
-            author: hit.author.unwrap_or_default(),
-            points: hit.points.unwrap_or(0),
-            num_comments: hit.num_comments.unwrap_or(0),
-            created_at: hit.created_at_i.unwrap_or(0),
-            rating: None,
-        });
+            StoryData {
+                id,
+                title,
+                url: hit.url,
+                author: hit.author.unwrap_or_default(),
+                points: hit.points.unwrap_or(0),
+                num_comments: hit.num_comments.unwrap_or(0),
+                created_at: hit.created_at_i.unwrap_or(0),
+                rating: None,
+            },
+        );
     }
 
     for s in db_rated {
@@ -217,21 +237,44 @@ async fn index(State(state): State<AppState>, Query(query): Query<IndexQuery>) -
     let total = stories.len() as i64;
 
     let tabs = vec![
-        TabContext { key: "all".to_string(),         label: "All".to_string(),     count: total },
-        TabContext { key: "unrated".to_string(),    label: "Unrated".to_string(), count: *count_map.get("unrated").unwrap_or(&0) },
-        TabContext { key: "thumbs_up".to_string(),  label: "👍 Up".to_string(),   count: *count_map.get("thumbs_up").unwrap_or(&0) },
-        TabContext { key: "average".to_string(),    label: "👋 Mid".to_string(),  count: *count_map.get("average").unwrap_or(&0) },
-        TabContext { key: "thumbs_down".to_string(),label: "👎 Down".to_string(), count: *count_map.get("thumbs_down").unwrap_or(&0) },
+        TabContext {
+            key: "all".to_string(),
+            label: "All".to_string(),
+            count: total,
+        },
+        TabContext {
+            key: "unrated".to_string(),
+            label: "Unrated".to_string(),
+            count: *count_map.get("unrated").unwrap_or(&0),
+        },
+        TabContext {
+            key: "thumbs_up".to_string(),
+            label: "👍 Up".to_string(),
+            count: *count_map.get("thumbs_up").unwrap_or(&0),
+        },
+        TabContext {
+            key: "average".to_string(),
+            label: "👋 Mid".to_string(),
+            count: *count_map.get("average").unwrap_or(&0),
+        },
+        TabContext {
+            key: "thumbs_down".to_string(),
+            label: "👎 Down".to_string(),
+            count: *count_map.get("thumbs_down").unwrap_or(&0),
+        },
     ];
 
     // Filter and sort
-    let mut filtered: Vec<&StoryData> = stories.values().filter(|s| match filter.as_str() {
-        "thumbs_up"   => s.rating.as_deref() == Some("thumbs_up"),
-        "average"     => s.rating.as_deref() == Some("average"),
-        "thumbs_down" => s.rating.as_deref() == Some("thumbs_down"),
-        "all"         => true,
-        _             => s.rating.is_none(),
-    }).collect();
+    let mut filtered: Vec<&StoryData> = stories
+        .values()
+        .filter(|s| match filter.as_str() {
+            "thumbs_up" => s.rating.as_deref() == Some("thumbs_up"),
+            "average" => s.rating.as_deref() == Some("average"),
+            "thumbs_down" => s.rating.as_deref() == Some("thumbs_down"),
+            "all" => true,
+            _ => s.rating.is_none(),
+        })
+        .collect();
 
     if sort == "date" {
         filtered.sort_by(|a, b| b.created_at.cmp(&a.created_at));
@@ -240,48 +283,65 @@ async fn index(State(state): State<AppState>, Query(query): Query<IndexQuery>) -
     }
 
     let now = Utc::now().timestamp();
-    let stories_ctx: Vec<StoryContext> = filtered.into_iter().map(|s| {
-        let domain = s.url.as_ref()
-            .and_then(|u| Url::parse(u).ok())
-            .and_then(|u| u.host_str().map(|h| h.strip_prefix("www.").unwrap_or(h).to_string()))
-            .unwrap_or_default();
-        let title_url = s.url.clone()
-            .unwrap_or_else(|| format!("https://news.ycombinator.com/item?id={}", s.id));
-        let url_raw = s.url.clone().unwrap_or_default();
+    let stories_ctx: Vec<StoryContext> = filtered
+        .into_iter()
+        .map(|s| {
+            let domain = s
+                .url
+                .as_ref()
+                .and_then(|u| Url::parse(u).ok())
+                .and_then(|u| {
+                    u.host_str()
+                        .map(|h| h.strip_prefix("www.").unwrap_or(h).to_string())
+                })
+                .unwrap_or_default();
+            let title_url = s
+                .url
+                .clone()
+                .unwrap_or_else(|| format!("https://news.ycombinator.com/item?id={}", s.id));
+            let url_raw = s.url.clone().unwrap_or_default();
 
-        let diff = now - s.created_at;
-        let time_ago = if diff < 3600 { format!("{}m ago", diff / 60) }
-            else if diff < 86400 { format!("{}h ago", diff / 3600) }
-            else { format!("{}d ago", diff / 86400) };
+            let diff = now - s.created_at;
+            let time_ago = if diff < 3600 {
+                format!("{}m ago", diff / 60)
+            } else if diff < 86400 {
+                format!("{}h ago", diff / 3600)
+            } else {
+                format!("{}d ago", diff / 86400)
+            };
 
-        let rating_html = render_rating_group_html(&state.jinja, s.id, s.rating.as_deref());
+            let rating_html = render_rating_group_html(&state.jinja, s.id, s.rating.as_deref());
 
-        StoryContext {
-            id: s.id,
-            title: s.title.clone(),
-            title_url,
-            url_raw,
-            domain,
-            author: s.author.clone(),
-            points: s.points,
-            num_comments: s.num_comments,
-            created_at: s.created_at,
-            time_ago,
-            rating_html,
-        }
-    }).collect();
+            StoryContext {
+                id: s.id,
+                title: s.title.clone(),
+                title_url,
+                url_raw,
+                domain,
+                author: s.author.clone(),
+                points: s.points,
+                num_comments: s.num_comments,
+                created_at: s.created_at,
+                time_ago,
+                rating_html,
+            }
+        })
+        .collect();
 
-    let html = state.jinja.render("hn/index.jinja", minijinja::context! {
-        filter => filter,
-        sort => sort,
-        date => date_str,
-        today => today_str,
-        prev_date => prev_date,
-        next_date => next_date,
-        tabs => tabs,
-        stories => stories_ctx,
-        fetch_error => fetch_error,
-    });
+    let html = state.jinja.render(
+        "hn/index.jinja",
+        minijinja::context! {
+            filter => filter,
+            sort => sort,
+            date => date_str,
+            today => today_str,
+            prev_date => prev_date,
+            next_date => next_date,
+            tabs => tabs,
+            stories => stories_ctx,
+            fetch_error => fetch_error,
+        },
+    );
 
     Html(html)
 }
@@ -292,17 +352,33 @@ struct RatingButton {
     emoji: &'static str,
 }
 
-fn render_rating_group_html(jinja: &crate::JinjaEnv, id: i64, current_rating: Option<&str>) -> String {
+fn render_rating_group_html(
+    jinja: &crate::JinjaEnv,
+    id: i64,
+    current_rating: Option<&str>,
+) -> String {
     let buttons = vec![
-        RatingButton { val: "thumbs_up",   emoji: "👍" },
-        RatingButton { val: "average",     emoji: "👋" },
-        RatingButton { val: "thumbs_down", emoji: "👎" },
+        RatingButton {
+            val: "thumbs_up",
+            emoji: "👍",
+        },
+        RatingButton {
+            val: "average",
+            emoji: "👋",
+        },
+        RatingButton {
+            val: "thumbs_down",
+            emoji: "👎",
+        },
     ];
-    jinja.render("hn/rating_group.jinja", minijinja::context! {
-        id => id,
-        current_rating => current_rating,
-        buttons => buttons,
-    })
+    jinja.render(
+        "hn/rating_group.jinja",
+        minijinja::context! {
+            id => id,
+            current_rating => current_rating,
+            buttons => buttons,
+        },
+    )
 }
 
 /// Story data submitted alongside every rating action via hx-include.
@@ -354,12 +430,22 @@ async fn rate_story(
     .execute(&state.pool)
     .await;
 
-    Html(render_rating_group_html(&state.jinja, id, Some(&form.rating)))
+    Html(render_rating_group_html(
+        &state.jinja,
+        id,
+        Some(&form.rating),
+    ))
 }
 
 async fn unrate_story(State(state): State<AppState>, Path(id): Path<i64>) -> impl IntoResponse {
-    let _ = sqlx::query("DELETE FROM hn_ratings WHERE story_id = ?1").bind(id).execute(&state.pool).await;
-    let _ = sqlx::query("DELETE FROM hn_stories  WHERE id        = ?1").bind(id).execute(&state.pool).await;
+    let _ = sqlx::query("DELETE FROM hn_ratings WHERE story_id = ?1")
+        .bind(id)
+        .execute(&state.pool)
+        .await;
+    let _ = sqlx::query("DELETE FROM hn_stories  WHERE id        = ?1")
+        .bind(id)
+        .execute(&state.pool)
+        .await;
 
     Html(render_rating_group_html(&state.jinja, id, None))
 }

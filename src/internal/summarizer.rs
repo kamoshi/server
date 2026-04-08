@@ -1,10 +1,10 @@
 use std::env;
 
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 use chrono::{Duration, Utc};
-use gemini_rust::{client::Model, Gemini};
-use miniflux_api::models::{EntryStatus, OrderBy, OrderDirection};
+use gemini_rust::{Gemini, client::Model};
 use miniflux_api::MinifluxApi;
+use miniflux_api::models::{EntryStatus, OrderBy, OrderDirection};
 use reqwest::Client;
 use url::Url;
 

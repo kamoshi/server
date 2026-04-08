@@ -1,15 +1,17 @@
+pub mod rss;
+
 use std::{env, sync::LazyLock};
 
 use axum::{
+    Router,
     response::{Html, IntoResponse, Response},
     routing::get,
-    Router,
 };
 use chrono::{Duration, Local, Timelike, Utc};
 use gemini_rust::{Gemini, Model};
 use miniflux_api::{
-    models::{EntryStatus, OrderBy, OrderDirection},
     MinifluxApi,
+    models::{EntryStatus, OrderBy, OrderDirection},
 };
 use reqwest::Client;
 use tokio::sync::Mutex;
@@ -102,6 +104,11 @@ const MODEL: Model = Model::Gemini3Flash;
 type CachedSummary = (chrono::DateTime<Local>, String);
 
 static SUMMARY_CACHE: LazyLock<Mutex<Option<CachedSummary>>> = LazyLock::new(|| Mutex::new(None));
+
+#[derive(Clone)]
+pub struct AppState {
+    pub jinja: crate::JinjaEnv,
+}
 
 fn md_to_html(md: &str) -> String {
     let parser = pulldown_cmark::Parser::new(md);
@@ -250,6 +257,28 @@ async fn summary() -> Response {
         .into_response()
 }
 
-pub fn router() -> Router {
-    Router::new().route("/summary", get(summary))
+pub fn router(jinja: crate::JinjaEnv) -> Router {
+    use tower::ServiceBuilder;
+    use tower_http::normalize_path::NormalizePathLayer;
+
+    let state = AppState { jinja };
+
+    Router::new()
+        .route("/summary", get(summary))
+        .route("/rss", get(rss::index))
+        .route(
+            "/rss/anthropic/research",
+            get(rss::anthropic::research::handler),
+        )
+        .route("/rss/anthropic/red", get(rss::anthropic::red::handler))
+        .route(
+            "/rss/anthropic/transformer-circuits",
+            get(rss::anthropic::transformer_circuits::handler),
+        )
+        .route(
+            "/rss/anthropic/alignment",
+            get(rss::anthropic::alignment::handler),
+        )
+        .with_state(state)
+        .layer(ServiceBuilder::new().layer(NormalizePathLayer::trim_trailing_slash()))
 }
