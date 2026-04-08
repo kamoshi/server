@@ -45,24 +45,37 @@ async fn render_feed() -> Result<String, (StatusCode, String)> {
 
     let document = Html::parse_document(&html_content);
 
-    let note_selector = Selector::parse("a.paper, a.note").unwrap();
+    let date_or_note_selector = Selector::parse("div.date, a.paper, a.note").unwrap();
     let title_selector = Selector::parse("h3").unwrap();
     let desc_selector = Selector::parse("div.description").unwrap();
 
-    let items: Vec<rss::Item> = document
-        .select(&note_selector)
-        .filter_map(|el| {
-            let href = el.value().attr("href")?;
+    let mut current_date: Option<chrono::NaiveDate> = None;
+    let mut items: Vec<rss::Item> = Vec::new();
+
+    for el in document.select(&date_or_note_selector) {
+        if el.value().name() == "div" {
+            let text = el.text().collect::<String>();
+            let text = text.trim();
+            if let Ok(d) = chrono::NaiveDate::parse_from_str(&format!("1 {text}"), "%d %B %Y") {
+                current_date = Some(d);
+            }
+        } else {
+            let Some(href) = el.value().attr("href") else {
+                continue;
+            };
             let link = if href.starts_with("http") {
                 href.to_string()
             } else {
                 format!("https://alignment.anthropic.com/{href}")
             };
 
-            let title = el
+            let Some(title) = el
                 .select(&title_selector)
                 .next()
-                .map(|e| e.text().collect::<String>())?;
+                .map(|e| e.text().collect::<String>())
+            else {
+                continue;
+            };
 
             let description = el
                 .select(&desc_selector)
@@ -70,16 +83,12 @@ async fn render_feed() -> Result<String, (StatusCode, String)> {
                 .map(|e| e.text().collect::<String>())
                 .unwrap_or_default();
 
-            let pub_date = href
-                .split('/')
-                .find(|s| s.len() == 4 && s.chars().all(|c| c.is_ascii_digit()))
-                .and_then(|y| y.parse::<i32>().ok())
-                .and_then(|y| chrono::NaiveDate::from_ymd_opt(y, 1, 1))
+            let pub_date = current_date
                 .and_then(|d| d.and_hms_opt(0, 0, 0))
                 .map(|dt| dt.and_utc().to_rfc2822())
                 .unwrap_or_else(|| Utc::now().to_rfc2822());
 
-            Some(
+            items.push(
                 ItemBuilder::default()
                     .title(Some(title))
                     .link(Some(link.clone()))
@@ -87,9 +96,9 @@ async fn render_feed() -> Result<String, (StatusCode, String)> {
                     .pub_date(Some(pub_date))
                     .guid(Some(GuidBuilder::default().value(link).build()))
                     .build(),
-            )
-        })
-        .collect();
+            );
+        }
+    }
 
     let channel = ChannelBuilder::default()
         .title(TITLE)
