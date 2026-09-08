@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    naersk.url = "github:nix-community/naersk";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -11,7 +10,6 @@
     {
       self,
       nixpkgs,
-      naersk,
       flake-utils,
     }:
     flake-utils.lib.eachDefaultSystem (
@@ -20,11 +18,15 @@
         pkgs = (import nixpkgs) {
           inherit system;
         };
-        naersk-lib = pkgs.callPackage naersk { };
       in
       {
-        packages.fukurou = naersk-lib.buildPackage {
+        packages.fukurou = pkgs.rustPlatform.buildRustPackage {
+          pname = "fukurou";
+          version = "0.1.0";
           src = ./.;
+
+          cargoLock.lockFile = ./Cargo.lock;
+
           nativeBuildInputs = with pkgs; [ pkg-config ];
           buildInputs = with pkgs; [ sqlite ];
         };
