@@ -3,55 +3,59 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
   };
 
   outputs =
+    { nixpkgs, ... }:
+    let
+      lib = nixpkgs.lib;
+
+      serverSystem = "x86_64-linux";
+      serverPkgs = import nixpkgs { system = serverSystem; };
+
+      devSystems = [
+        "x86_64-linux"
+        "aarch64-darwin"
+      ];
+
+      fukurou = serverPkgs.rustPlatform.buildRustPackage {
+        pname = "fukurou";
+        version = "0.1.0";
+        src = ./.;
+
+        cargoLock.lockFile = ./Cargo.lock;
+
+        nativeBuildInputs = with serverPkgs; [ pkg-config ];
+        buildInputs = with serverPkgs; [ sqlite ];
+      };
+    in
     {
-      self,
-      nixpkgs,
-      flake-utils,
-    }:
-    flake-utils.lib.eachDefaultSystem (
-      system:
-      let
-        pkgs = (import nixpkgs) {
-          inherit system;
-        };
-      in
-      {
-        packages.fukurou = pkgs.rustPlatform.buildRustPackage {
-          pname = "fukurou";
-          version = "0.1.0";
-          src = ./.;
+      packages.${serverSystem} = {
+        inherit fukurou;
+        default = fukurou;
+      };
 
-          cargoLock.lockFile = ./Cargo.lock;
-
-          nativeBuildInputs = with pkgs; [ pkg-config ];
-          buildInputs = with pkgs; [ sqlite ];
-        };
-        packages.default = self.packages.${system}.fukurou;
-
-        devShells.default = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [
-            cargo
-            rustc
-            rustfmt
-            rustPackages.clippy
-            pkg-config
-          ];
-          buildInputs = with pkgs; [ sqlite ];
-        };
-      }
-    )
-    // {
-      nixosModules.default =
+      devShells = lib.genAttrs devSystems (
+        system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+        in
         {
-          config,
-          lib,
-          pkgs,
-          ...
-        }:
+          default = pkgs.mkShell {
+            nativeBuildInputs = with pkgs; [
+              cargo
+              rustc
+              rustfmt
+              rustPackages.clippy
+              pkg-config
+            ];
+            buildInputs = with pkgs; [ sqlite ];
+          };
+        }
+      );
+
+      nixosModules.default =
+        { config, lib, ... }:
         let
           cfg = config.services.fukurou;
         in
@@ -86,7 +90,7 @@
               wants = [ "network-online.target" ];
 
               serviceConfig = {
-                ExecStart = "${self.packages.x86_64-linux.fukurou}/bin/fukurou";
+                ExecStart = "${fukurou}/bin/fukurou";
                 DynamicUser = true;
                 StateDirectory = "fukurou";
                 MemoryMax = "64M";
